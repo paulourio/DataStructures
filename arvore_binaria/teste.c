@@ -15,10 +15,15 @@ int main(void) {
 	int	i;
 
 	puts("Adicionando..");
-	for (i=0; i<TAM; i++) 
+	for (i=0; i<TAM; i++)
 		tree_insert(&arvore, valores[i]);
 
 	puts("Imprimindo..");
+	tree_walk(arvore, print_node, WALK_INORDER);
+	puts("");
+
+	puts("Removendo nó..");
+	tree_delete(&arvore, 3);
 	tree_walk(arvore, print_node, WALK_INORDER);
 	puts("");
 

@@ -22,7 +22,8 @@ typedef void (*fbst_print)(const int);
 void *tree_new(void);
 void tree_free(void **ptr) __nonnull ((1));
 void tree_insert(void **ptree, const int value) __nonnull ((1));
-void tree_walk(void *ptree, const register fbst_print cblk, 
-		const register enum TREE_WALKORDER worder) __nonnull ((1));
+void tree_delete(void **ptree, const int value) __nonnull ((1));
+void tree_walk(void *ptree, register const fbst_print cblk,
+		register const enum TREE_WALKORDER worder);
 
 #endif
