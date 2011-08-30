@@ -9,16 +9,6 @@ struct bstree {
 };
 
 
-/* Acessar Árvore quando for ponteiro */
-#define TREE(bst)   ((struct bstree *) bst)
-
-/* Acessar Árvore quando for ponteiro para ponteiro */
-#define PTREE(bst)  (* (struct bstree **) bst)
-
-/* Verificar se é uma folha */
-#define LEAF(bst)   (!(bst)->lchild && !(bst)->rchild)
-
-
 /* Aloca um novo nó */
 static struct bstree *tree_new_node(const int value)
 {
@@ -83,10 +73,8 @@ static struct bstree *tree_predecessor(struct bstree *bst)
 
 	if (bst->lchild != NULL)
 		return tree_max(bst->lchild);
-	while (pai && bst == pai->lchild) {
-		bst = pai;
-		pai = pai->parent;
-	}
+	while (pai && bst == pai->lchild)
+		pai = (bst = pai)->parent;
 	return pai;
 }
 
@@ -101,10 +89,13 @@ void *tree_new(void)
 /* Liberar todos os nós da árvore */
 void tree_free(void **ptr)
 {
-	if (!ptr || !PTREE(ptr))
+	struct bstree	*tree;
+
+	if (!ptr || *ptr == NULL)
 		return;
-	tree_free(&PTREE(ptr)->lchild);
-	tree_free(&PTREE(ptr)->rchild);
+	tree = *ptr;
+	tree_free(&tree->lchild);
+	tree_free(&tree->rchild);
 	free(*ptr);
 	*ptr = NULL;
 }
@@ -113,7 +104,7 @@ void tree_free(void **ptr)
 /* Inserir um valor na árvore */
 void tree_insert(void **ptree, const int value)
 {
-	struct bstree   *prev = NULL, *bst = PTREE(ptree),
+	struct bstree   *prev = NULL, *bst = *ptree,
 			*node = tree_new_node(value);
 
 	while (bst) {
@@ -165,7 +156,7 @@ static struct bstree *tree_which_son_node(struct bstree *node)
 static void tree_update_father_node(void **ptree, struct bstree *node,
 					struct bstree *new_son)
 {
-	struct bstree	*pai = TREE(node->parent);
+	struct bstree	*pai = node->parent;
 
 	if (node->parent == NULL)
 		*ptree = new_son;
@@ -186,11 +177,11 @@ void tree_delete(void **ptree, const int value)
 {
 	struct bstree   *node, *y, *x;
 
-	if (!ptree || !PTREE(ptree)) {
+	if (!ptree || !*ptree) {
 		debug("Árvore vazia.\n");
 		return;
 	}
-	node = tree_search(PTREE(ptree), value);
+	node = tree_search(*ptree, value);
 	if (!node) {
 		debug("Nó '%d' não encontrado.\n", value);
 		return;
@@ -209,14 +200,16 @@ void tree_walk(void *ptree, register const fbst_print cblk,
 		register const enum TREE_WALKORDER worder)
 {
 	if (ptree != NULL) {
+		struct bstree	*node = ptree;
+
 		if (worder == WALK_INORDER)
-			cblk(TREE(ptree)->value);
-		tree_walk(TREE(ptree)->lchild, cblk, worder);
+			cblk(node->value);
+		tree_walk(node->lchild, cblk, worder);
 		if (worder == WALK_PREORDER)
-			cblk(TREE(ptree)->value);
-		tree_walk(TREE(ptree)->rchild, cblk, worder);
+			cblk(node->value);
+		tree_walk(node->rchild, cblk, worder);
 		if (worder == WALK_POSORDER)
-			cblk(TREE(ptree)->value);
+			cblk(node->value);
 	}
 }
 
