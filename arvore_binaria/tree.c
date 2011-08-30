@@ -49,14 +49,14 @@ static struct bstree *tree_search(struct bstree *ptree, const int valor)
 /* Retorna o valor mínimo na Árvore */
 static struct bstree *tree_min(struct bstree *ptree)
 {
-	return ptree && ptree->lchild? tree_min(ptree->lchild): ptree;
+	return ptree && ptree->lchild?  tree_min(ptree->lchild):  ptree;
 }
 
 
 /* Retorna o valor máximo na Árvore */
 static struct bstree *tree_max(struct bstree *ptree)
 {
-	return ptree && ptree->rchild? tree_max(ptree->rchild): ptree;
+	return ptree && ptree->rchild?  tree_max(ptree->rchild):  ptree;
 }
 
 
@@ -129,7 +129,58 @@ void tree_insert(void **ptree, const int value)
 }
 
 
-/* Deletar um valor da árvore */
+/*
+ * Se não tiver um dos filhos, o único filho será passado para o
+ * pai, senão é buscado o nó sucessor. A função retorna qual nó
+ * será removido.
+ */
+static struct bstree *tree_which_node(struct bstree *node)
+{
+	if (!node->lchild || !node->rchild)
+		return node;
+	else
+		return tree_successor(node);
+}
+
+
+/*
+ * Define qual nó "neto" vai virar filho.
+ */
+static struct bstree *tree_which_son_node(struct bstree *node)
+{
+	if (node->lchild != NULL)
+		return node->lchild;
+	else
+		return node->rchild;
+}
+
+
+/*
+ * Atualiza a ligação do pai com o novo filho.
+ * Se o nó a ser removido for na raiz, atualiza a raiz da árvore.
+ * Senão atualiza o filho do pai, dependendo se o nó a ser removido
+ * estiver na esquerda ou direita do pai.
+ */
+static void tree_update_father_node(void **ptree, struct bstree *node,
+					struct bstree *new_son)
+{
+	struct bstree	*pai = TREE(node->parent);
+
+	if (node->parent == NULL)
+		*ptree = new_son;
+	else if (node == pai->lchild)
+		pai->lchild = new_son;
+	else
+		pai->rchild = new_son;
+}
+
+/*
+ * Deletar um valor da árvore
+ * Encontra o nó y que será removido e o filho x de que passará a ser
+ * filho do pai.  Existe um caso em que nó y não tem o valor a ser removido,
+ * neste caso y é uma folha e o valor é copiado para o nó com o valor a ser
+ * removido.
+ */
 void tree_delete(void **ptree, const int value)
 {
 	struct bstree   *node, *y, *x;
@@ -143,40 +194,11 @@ void tree_delete(void **ptree, const int value)
 		debug("Nó '%d' não encontrado.\n", value);
 		return;
 	}
-	if (!node->lchild || !node->rchild) {
-		/* Se não tiver os dois filhos o único filho vira
-		filha do pai. */
-		y = node;
-	} else {
-		/* Possui os dois filhos, procura o nó sucessor. */
-		y = tree_successor(node);
-	}
-	/* Qual "neto" vai virar filho ? */
-	if (y->lchild) {
-		x = y->lchild;
-	} else {
-		x = y->rchild;
-	}
-	if (x) {
-		/* Atualiza a ligação do filho com o novo pai. */
-		x->parent = y->parent;
-	}
-	if (y->parent == NULL) {
-		/* Se estiver removendo a raiz, atualiza a nova raiz */
-		PTREE(ptree) = x;
-	} else if (y == TREE(TREE(y->parent)->lchild)) {
-		/* Se estiver removendo o filho esquerdo */
-		TREE(y->parent)->lchild = x;
-		} else {
-			/* Se estiver removendo o filho direito */
-		TREE(y->parent)->rchild = x;
-		}
-	if (y != node) {
-		/* Se estiver na verdade removendo um nó que era
-		   sucessor, copia os dados do sucessor para o lugar do
-		   nó que era pra ser removido. */
+	y = tree_which_node(node);
+	x = tree_which_son_node(y);
+	tree_update_father_node(ptree, y, x);
+	if (y != node)
 		node->value = y->value;
-	}
 	free(y);
 }
 
