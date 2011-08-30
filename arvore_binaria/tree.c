@@ -47,21 +47,21 @@ static struct bstree *tree_search(struct bstree *ptree, const int valor)
 }
 
 
-/* Retorna o valor mínimo na Árvore */
+/* Retorna o nó com o valor mínimo na árvore */
 static struct bstree *tree_min(struct bstree *ptree)
 {
 	return (ptree && ptree->lchild)?  tree_min(ptree->lchild):  ptree;
 }
 
 
-/* Retorna o valor máximo na Árvore */
+/* Retorna o nó com o valor máximo na árvore */
 static struct bstree *tree_max(struct bstree *ptree)
 {
 	return (ptree && ptree->rchild)?  tree_max(ptree->rchild):  ptree;
 }
 
 
-/* Encontrar o sucessor */
+/* Encontra o sucessor */
 static struct bstree *tree_successor(struct bstree *bst)
 {
 	struct bstree   *pai = bst->parent;
@@ -74,7 +74,7 @@ static struct bstree *tree_successor(struct bstree *bst)
 }
 
 
-/* Encontrar o predecessor */
+/* Encontra o predecessor */
 static struct bstree *tree_predecessor(struct bstree *bst)
 {
 	struct bstree   *pai = bst->parent;
@@ -87,7 +87,7 @@ static struct bstree *tree_predecessor(struct bstree *bst)
 }
 
 
-/* Inicializa uma Árvore binária de busca vazia */
+/* Inicializa uma árvore binária de busca vazia */
 void *tree_new(void)
 {
 	return NULL;
@@ -143,9 +143,7 @@ static struct bstree *tree_which_node(struct bstree *node)
 }
 
 
-/*
- * Define qual nó "neto" vai virar filho.
- */
+/* Define qual nó "neto" vai virar filho. */
 static struct bstree *tree_which_son_node(struct bstree *node)
 {
 	if (node->lchild != NULL)
@@ -203,7 +201,7 @@ void tree_delete(void **ptree, const int value)
 }
 
 
-/* Percorrer a Árvore */
+/* Percorre a Árvore */
 void tree_walk(void *ptree, register const fbst_print cblk,
 		register const enum TREE_WALKORDER worder)
 {
