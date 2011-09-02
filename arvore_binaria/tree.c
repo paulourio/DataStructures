@@ -13,7 +13,7 @@ struct bstree {
 	void    *parent;
 	void    *lchild;
 	void    *rchild;
-	int value;
+	int 	value;
 };
 
 
@@ -38,7 +38,7 @@ static struct bstree *tree_new_node(const int value)
 /* Procura um valor na árvore e retorna o nó */
 static struct bstree *tree_search(struct bstree *ptree, const int valor)
 {
-	while (ptree && valor != ptree->value)
+	while (ptree != NULL && valor != ptree->value)
 		if (valor < ptree->value)
 			ptree = ptree->lchild;
 		else
@@ -50,14 +50,20 @@ static struct bstree *tree_search(struct bstree *ptree, const int valor)
 /* Retorna o nó com o valor mínimo na árvore */
 static struct bstree *tree_min(struct bstree *ptree)
 {
-	return (ptree && ptree->lchild)?  tree_min(ptree->lchild):  ptree;
+	if (ptree != NULL && ptree->lchild)
+		return tree_min(ptree->lchild);
+	else
+		return ptree;
 }
 
 
 /* Retorna o nó com o valor máximo na árvore */
 static struct bstree *tree_max(struct bstree *ptree)
 {
-	return (ptree && ptree->rchild)?  tree_max(ptree->rchild):  ptree;
+	if (ptree != NULL && ptree->rchild)
+		return tree_max(ptree->rchild);
+	else
+		return ptree;
 }
 
 
@@ -66,9 +72,9 @@ static struct bstree *tree_successor(struct bstree *bst)
 {
 	struct bstree   *pai = bst->parent;
 
-	if (bst->rchild)
+	if (bst->rchild != NULL)
 		return tree_min(bst->rchild);
-	while (pai && bst == pai->rchild)
+	while (pai != NULL && bst == pai->rchild)
 		pai = (bst = pai)->parent;
 	return pai;
 }
@@ -81,7 +87,7 @@ static struct bstree *tree_predecessor(struct bstree *bst)
 
 	if (bst->lchild != NULL)
 		return tree_max(bst->lchild);
-	while (pai && bst == pai->lchild)
+	while (pai != NULL && bst == pai->lchild)
 		pai = (bst = pai)->parent;
 	return pai;
 }
@@ -99,7 +105,7 @@ void tree_free(void **ptr)
 {
 	struct bstree	*tree;
 
-	if (!ptr || *ptr == NULL)
+	if (*ptr == NULL)
 		return;
 	tree = *ptr;
 	tree_free(&tree->lchild);
@@ -115,7 +121,7 @@ void tree_insert(void **ptree, const int value)
 	struct bstree   *prev = NULL, *bst = *ptree,
 			*node = tree_new_node(value);
 
-	while (bst) {
+	while (bst != NULL) {
 		prev = bst;
 		bst = (value < bst->value)?  bst->lchild:  bst->rchild;
 	}
@@ -136,7 +142,7 @@ void tree_insert(void **ptree, const int value)
  */
 static struct bstree *tree_which_node(struct bstree *node)
 {
-	if (!node->lchild || !node->rchild)
+	if (node->lchild == NULL || node->rchild == NULL)
 		return node;
 	else
 		return tree_successor(node);
@@ -146,10 +152,7 @@ static struct bstree *tree_which_node(struct bstree *node)
 /* Define qual nó "neto" vai virar filho. */
 static struct bstree *tree_which_son_node(struct bstree *node)
 {
-	if (node->lchild != NULL)
-		return node->lchild;
-	else
-		return node->rchild;
+	return node->lchild != NULL?  node->lchild:  node->rchild;
 }
 
 
@@ -172,6 +175,7 @@ static void tree_update_father_node(void **ptree, struct bstree *node,
 		pai->rchild = new_son;
 }
 
+
 /*
  * Deletar um valor da árvore
  * Encontra o nó y que será removido e o filho x de que passará a ser
@@ -183,12 +187,12 @@ void tree_delete(void **ptree, const int value)
 {
 	struct bstree   *node, *y, *x;
 
-	if (!ptree || !*ptree) {
+	if (*ptree == NULL) {
 		debug("Árvore vazia.\n");
 		return;
 	}
 	node = tree_search(*ptree, value);
-	if (!node) {
+	if (node == NULL) {
 		debug("Nó '%d' não encontrado.\n", value);
 		return;
 	}
@@ -208,12 +212,16 @@ void tree_walk(void *ptree, register const fbst_print cblk,
 	if (ptree != NULL) {
 		struct bstree	*node = ptree;
 
-		if (worder == WALK_INORDER)
-			cblk(node->value);
-		tree_walk(node->lchild, cblk, worder);
 		if (worder == WALK_PREORDER)
 			cblk(node->value);
+			
+		tree_walk(node->lchild, cblk, worder);
+		
+		if (worder == WALK_INORDER)
+			cblk(node->value);
+			
 		tree_walk(node->rchild, cblk, worder);
+		
 		if (worder == WALK_POSORDER)
 			cblk(node->value);
 	}
@@ -222,13 +230,13 @@ void tree_walk(void *ptree, register const fbst_print cblk,
 
 int tree_min_value(void *ptree)
 {
-	return ptree?  tree_min(ptree)->value:  0;
+	return ptree != NULL?  tree_min(ptree)->value:  NOT_FOUND;
 }
 
 
 int tree_max_value(void *ptree)
 {
-	return ptree?  tree_max(ptree)->value:  0;
+	return ptree != NULL?  tree_max(ptree)->value:  NOT_FOUND;
 }
 
 
@@ -248,9 +256,9 @@ int tree_predecessor_value(void *ptree, const int value)
 {
 	struct bstree   *no, *pred;
 
-	if (!ptree)
+	if (ptree == NULL)
 		return NOT_FOUND;
 	no = tree_search(ptree, value);
 	pred = tree_predecessor(no);
-	return pred?  pred->value:  NOT_FOUND;
+	return pred != NULL?  pred->value:  NOT_FOUND;
 }
