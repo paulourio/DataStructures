@@ -24,7 +24,7 @@ static struct bstree *tree_new_node(const int value)
 
 	bst = malloc(sizeof(struct bstree));
 	if (bst == NULL) {
-		debug("Can't allocate memory to node of value '%d'.\n", value);
+		debug("Can't allocate memory to node of value '%d'\n", value);
 		return NULL;
 	}
 	bst->parent = NULL;
@@ -188,12 +188,12 @@ void tree_delete(void **ptree, const int value)
 	struct bstree   *node, *y, *x;
 
 	if (*ptree == NULL) {
-		debug("Árvore vazia.\n");
+		debug("Empty tree.\n");
 		return;
 	}
 	node = tree_search(*ptree, value);
 	if (node == NULL) {
-		debug("Nó '%d' não encontrado.\n", value);
+		debug("Node '%d' was not found.\n", value);
 		return;
 	}
 	y = tree_which_node(node);
@@ -251,7 +251,7 @@ int tree_successor_value(void *ptree, const int value)
 		return NOT_FOUND;
 	no = tree_search(ptree, value);
 	succ = tree_successor(no);
-	return succ?  succ->value:  NOT_FOUND;
+	return succ != NULL?  succ->value:  NOT_FOUND;
 }
 
 
