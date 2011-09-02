@@ -17,14 +17,14 @@ struct bstree {
 };
 
 
-/* Aloca um novo nó */
+/* Allocate memory for a new node */
 static struct bstree *tree_new_node(const int value)
 {
 	struct bstree   *bst;
 
 	bst = malloc(sizeof(struct bstree));
 	if (bst == NULL) {
-		debug("Erro ao alocar nó com valor '%d'.\n", value);
+		debug("Can't allocate memory to node of value '%d'.\n", value);
 		return NULL;
 	}
 	bst->parent = NULL;
@@ -35,7 +35,7 @@ static struct bstree *tree_new_node(const int value)
 }
 
 
-/* Procura um valor na árvore e retorna o nó */
+/* Search a value in the tree and returns its node */
 static struct bstree *tree_search(struct bstree *ptree, const int valor)
 {
 	while (ptree != NULL && valor != ptree->value)
@@ -47,7 +47,7 @@ static struct bstree *tree_search(struct bstree *ptree, const int valor)
 }
 
 
-/* Retorna o nó com o valor mínimo na árvore */
+/* Returns the minimum value node in the tree */
 static struct bstree *tree_min(struct bstree *ptree)
 {
 	if (ptree != NULL && ptree->lchild)
@@ -57,7 +57,7 @@ static struct bstree *tree_min(struct bstree *ptree)
 }
 
 
-/* Retorna o nó com o valor máximo na árvore */
+/* Returns the maximum value node in the tree */
 static struct bstree *tree_max(struct bstree *ptree)
 {
 	if (ptree != NULL && ptree->rchild)
@@ -67,7 +67,7 @@ static struct bstree *tree_max(struct bstree *ptree)
 }
 
 
-/* Encontra o sucessor */
+/* Finds the successor node */
 static struct bstree *tree_successor(struct bstree *bst)
 {
 	struct bstree   *pai = bst->parent;
@@ -80,7 +80,7 @@ static struct bstree *tree_successor(struct bstree *bst)
 }
 
 
-/* Encontra o predecessor */
+/* Finds the predecessor node */
 static struct bstree *tree_predecessor(struct bstree *bst)
 {
 	struct bstree   *pai = bst->parent;
@@ -93,14 +93,14 @@ static struct bstree *tree_predecessor(struct bstree *bst)
 }
 
 
-/* Inicializa uma árvore binária de busca vazia */
+/* Initialize an empty binary search tree */
 void *tree_new(void)
 {
 	return NULL;
 }
 
 
-/* Liberar todos os nós da árvore */
+/* Free all tree nodes */
 void tree_free(void **ptr)
 {
 	struct bstree	*tree;
@@ -115,7 +115,7 @@ void tree_free(void **ptr)
 }
 
 
-/* Inserir um valor na árvore */
+/* Insert a value in the tree */
 void tree_insert(void **ptree, const int value)
 {
 	struct bstree   *prev = NULL, *bst = *ptree,
@@ -136,9 +136,9 @@ void tree_insert(void **ptree, const int value)
 
 
 /*
- * Se não tiver um dos filhos, o único filho será passado para o
- * pai, senão é buscado o nó sucessor. A função retorna qual nó
- * será removido.
+ * If the node has only one child, this child will be child of the
+ * parent node, else will be found the successor node of node. 
+ * Returns which node will be removed.
  */
 static struct bstree *tree_which_node(struct bstree *node)
 {
@@ -149,7 +149,7 @@ static struct bstree *tree_which_node(struct bstree *node)
 }
 
 
-/* Define qual nó "neto" vai virar filho. */
+/* Select which node switch with node. */
 static struct bstree *tree_which_son_node(struct bstree *node)
 {
 	return node->lchild != NULL?  node->lchild:  node->rchild;
@@ -157,10 +157,10 @@ static struct bstree *tree_which_son_node(struct bstree *node)
 
 
 /*
- * Atualiza a ligação do pai com o novo filho.
- * Se o nó a ser removido for na raiz, atualiza a raiz da árvore.
- * Senão atualiza o filho do pai, dependendo se o nó a ser removido
- * estiver na esquerda ou direita do pai.
+ * Updates the connection of parent with new child.
+ * If the node to be removed is the root, update the tree's root.
+ * Else will be updated the son, depending whether the node to be removed
+ * is on left or right of parent node.
  */
 static void tree_update_father_node(void **ptree, struct bstree *node,
 					struct bstree *new_son)
@@ -177,11 +177,11 @@ static void tree_update_father_node(void **ptree, struct bstree *node,
 
 
 /*
- * Deletar um valor da árvore
- * Encontra o nó y que será removido e o filho x de que passará a ser
- * filho do pai.  Existe um caso em que nó y não tem o valor a ser removido,
- * neste caso y é uma folha e o valor é copiado para o nó com o valor a ser
- * removido.
+ * Delete a tree's node
+ * Finds the y node to be removed and its x child that will be the new
+ * child of y's parent.  There's a case that y node isn't the node within
+ * value to be removed.  In this case, y node is a leaf and its value
+ * should be switched with the real node to be removed.
  */
 void tree_delete(void **ptree, const int value)
 {
@@ -205,7 +205,7 @@ void tree_delete(void **ptree, const int value)
 }
 
 
-/* Percorre a Árvore */
+/* Walk the tree in three orders */
 void tree_walk(void *ptree, register const fbst_print cblk,
 		register const enum TREE_WALKORDER worder)
 {
@@ -228,18 +228,21 @@ void tree_walk(void *ptree, register const fbst_print cblk,
 }
 
 
+/* Returns the minimum value in the tree */
 int tree_min_value(void *ptree)
 {
 	return ptree != NULL?  tree_min(ptree)->value:  NOT_FOUND;
 }
 
 
+/* Returns the maximum value in the tree */
 int tree_max_value(void *ptree)
 {
 	return ptree != NULL?  tree_max(ptree)->value:  NOT_FOUND;
 }
 
 
+/* Returns the successor value in the tree */
 int tree_successor_value(void *ptree, const int value)
 {
 	struct bstree   *no, *succ;
@@ -252,6 +255,7 @@ int tree_successor_value(void *ptree, const int value)
 }
 
 
+/* Returns the predecessor value in the tree */
 int tree_predecessor_value(void *ptree, const int value)
 {
 	struct bstree   *no, *pred;
