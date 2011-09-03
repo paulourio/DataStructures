@@ -22,25 +22,25 @@ int main(void)
 	int valores[] = {15, 5, 3, 12, 10, 13, 6, 7, 16, 20, 18, 23, 0};
 	int i;
 
-	puts("Adicionando..");
+	puts("Inserting");
 	for (i=0; valores[i] != 0; i++)
 	tree_insert(&arvore, valores[i]);
 
-	puts("Imprimindo..");
+	puts("Printing");
 	tree_walk(arvore, print_node, WALK_INORDER);
 	puts("");
-	printf("Maior: %d\n", tree_max_value(arvore));
-	printf("Menor: %d\n", tree_min_value(arvore));
-	printf("Sucessor de 5: %d\n", tree_successor_value(arvore, 5));
-	printf("Sucessor de 15: %d\n", tree_predecessor_value(arvore, 15));
+	printf("Maximum%d\n", tree_max_value(arvore));
+	printf("Minimum: %d\n", tree_min_value(arvore));
+	printf("Successor of 5: %d\n", tree_successor_value(arvore, 5));
+	printf("Successor of 15: %d\n", tree_predecessor_value(arvore, 15));
 
-	puts("Removendo nó..");
+	puts("Deleting node 16");
 	tree_delete(&arvore, 16);
 	tree_walk(arvore, print_node, WALK_INORDER);
 	puts("");
 
 
-	puts("Liberando...");
+	puts("Free'ing");
 	tree_free(&arvore);
 	return EXIT_SUCCESS;
 }

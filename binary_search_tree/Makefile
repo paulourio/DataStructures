@@ -1,6 +1,6 @@
 
 PROGRAMA=arvore
-FONTES=tree.c teste.c
+FONTES=tree.c test.c
 INCLUDES=.
 
 BIBLIOTECAS=m
