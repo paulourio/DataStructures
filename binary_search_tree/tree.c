@@ -127,7 +127,7 @@ void tree_insert(void **ptree, const int value)
 	}
 	node->parent = prev;
 	if (prev == NULL)
-		*ptree = node;		/* Árvore está vazia. */
+		*ptree = node;		/* The tree is empty. */
 	else if (value < prev->value)
 		prev->lchild = node;
 	else
