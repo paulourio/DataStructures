@@ -1,8 +1,6 @@
 /*
- * AUTOR
+ * AUTHOR
  *      Paulo Roberto Urio
- * PROPOSTA
- *      Testar implementação de lista encadeada circular.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +15,7 @@
 
 #define out(...)    printf("\t" __VA_ARGS__)
 
-#define Boolean(nome,valor) out("%s: %s\n", nome, valor? "sim": "não")
+#define Boolean(nome,valor) out("%s: %s\n", nome, valor? "yes": "no")
 
 #define Section(name)   printf("\n*****************************\n"\
                                "%s\n"\
@@ -44,7 +42,7 @@ int main(void) {
     // Null test
     END_TEST
 
-    Section("Testando inserções");
+    Section("Testing insertions");
 
     START_TEST
         lec_insert_front(&lst, 3);
@@ -76,16 +74,16 @@ int main(void) {
         lec_insert_front(&lst, 6);
     END_TEST
 
-    Section("Testando verificação de ordenação");
+    Section("Testing sorting check");
 
     START_TEST
         lec_fill(&lst, 10);
-        Boolean("Ordenado", lec_sorted(&lst));
+        Boolean("Sorted", lec_sorted(&lst));
         lec_insert_front(&lst, 2);
-        Boolean("Ordenado", lec_sorted(&lst));
+        Boolean("Sorted", lec_sorted(&lst));
     END_TEST
 
-    Section("Testando métodos de remoção");
+    Section("Deletion methods");
 
     START_TEST
         lec_fill(&lst, 3);
@@ -148,14 +146,14 @@ int main(void) {
         lec_remove(&lst, 4);
     END_TEST
 
-    Section("Testando função de contagem");
+    Section("Couting methods");
 
     START_TEST
         lec_fill(&lst, 30);
-        out("Contagem: %i\n", lec_count_if(&lst, numero_par));
+        out("Couting: %i\n", lec_count_if(&lst, numero_par));
     END_TEST
 
-    Section("Testando métodos de leitura");
+    Section("Reading methods");
 
     START_TEST
         lec_fill(&lst, 4);
