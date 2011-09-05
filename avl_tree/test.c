@@ -26,6 +26,8 @@ int main(void)
 	int valores[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 			-1, -2, -3, -4, -5, -6, -7, -8, 15, 14, 19, 
 			21, 36, 32, 38, 50, -59, 35, 0};
+	//int valores[] = {5, 1, 7, -3, 2, 6, -1, -2, 0};
+	//int valores[] = {9, 4, 11, 1, 7, 10, 3, 2, 0};
 	int i;
 
 	for (i=0; valores[i] != 0; i++) {
@@ -36,7 +38,7 @@ int main(void)
 		printf(" . ");
 	}
 
-	debug("Printing\n");
+	debug("\nPrinting\n");
 //	tree_walk(arvore, print_node, WALK_PREORDER);
 //	fflush(stdout);
 //	fprintf(stderr, "\n");

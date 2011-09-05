@@ -115,14 +115,11 @@ static int tree_update_height(struct avltree *node)
 {
 	if (node == NULL)
 		return 0;
-	if (node->lchild == NULL && node->rchild == NULL) {
-		debug("\tNode '%d' is 0 height. (leaf)\n", node->value);
+	if (node->lchild == NULL && node->rchild == NULL)
 		return 0;
-	}
 	int left = tree_update_height(node->lchild);
 	int right = tree_update_height(node->rchild);
 	node->height = max(left, right) + 1;
-	debug("\tNode '%d' is %d height.\n", node->value, node->height);
 	return node->height;
 }
 
