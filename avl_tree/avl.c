@@ -178,14 +178,10 @@ static void tree_balance(void **ptree, struct avltree *node)
 	struct avltree *old;
 	
 	while (node != NULL) {
-		debug("\tTree '%d' left height '%d'\n", node->value, height(node->lchild));
-		debug("\tTree '%d' right height '%d'\n", node->value, height(node->rchild));
 		int d = height(node->rchild) - height(node->lchild);
 		bal = abs(d);
 		node->height = max(height(node->rchild), height(node->lchild)) + 1;
-		debug("Node '%d' bal = '%d'\n\n", node->value, bal);
 		if (bal == 2) {
-			debug("\tsinal = %d\n\n", d);
 			if (d < 0 && od > 0) {
 				if (d == -2) {
 					tree_left_rotate(ptree, old);
@@ -195,14 +191,11 @@ static void tree_balance(void **ptree, struct avltree *node)
 					tree_left_rotate(ptree, node);
 				}
 			} else {
-				debug("simples\n");
 				if (d == 2) {
-					debug("esquerda %d\n", node->value);
 					tree_left_rotate(ptree, node);
 				} else {
 					tree_right_rotate(ptree, node);
 				}
-				debug("\nok\n");
 			}
 			tree_balance(ptree, node);
 			break;
