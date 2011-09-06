@@ -168,45 +168,55 @@ static void tree_right_rotate(void **ptree, struct avltree *node)
 }
 
 
+/*
+ * Rotate a node. If double_ is true, it will be done a double 
+ * node rotation, otherwise a single node rotation. Left tell
+ * which direction the rotation will be done. On double rotation,
+ * which means their balance factor have opposite signs, the 
+ * left will mean actually right rotation.
+ */
+static void tree_rotate(void **ptree, struct avltree *node, 
+	struct avltree *previous, int is_double, int to_left)
+{
+	if (is_double) {
+		if (!to_left) {
+			tree_left_rotate(ptree, previous);
+			tree_right_rotate(ptree, node);
+		} else {
+			tree_right_rotate(ptree, previous);
+			tree_left_rotate(ptree, node);
+		}
+	} else {
+		if (to_left) {
+			tree_left_rotate(ptree, node);
+		} else {
+			tree_right_rotate(ptree, node);
+		}
+	}
+}
+
+
 #define	height(t)	(t != NULL?  t->height:  0)
 static void tree_balance(void **ptree, struct avltree *node)
 {
-	int bal, od;
 	struct avltree *old;
+	int bal, oldbal;
 	
 	while (node != NULL) {
-		debug(".");
-		int d = height(node->rchild) - height(node->lchild);
-		bal = abs(d);
-		node->height = max(height(node->rchild), height(node->lchild)) + 1;
-		if (bal == 2) {
-			if (d < 0 && od > 0) {
-				debug("-- Double\n");
-				if (d == -2) {
-					debug("Rotating '%d' to left.\n", old->value);
-					tree_left_rotate(ptree, old);
-					debug("Rotating '%d' to right.\n", node->value);
-					tree_right_rotate(ptree, node);
-				} else {
-					debug("Rotating '%d' to right.\n", old->value);
-					tree_right_rotate(ptree, old);
-					debug("Rotating '%d' to left.\n", node->value);
-					tree_left_rotate(ptree, node);
-				}
-			} else {
-				debug("-- Simple\n");
-				if (d == 2) {
-					debug("Rotating '%d' to left.\n", node->value);
-					tree_left_rotate(ptree, node);
-				} else {
-					debug("Rotating '%d' to right.\n", node->value);
-					tree_right_rotate(ptree, node);
-				}
-			}
+		int rh = height(node->rchild);
+		int lh = height(node->lchild);
+		
+		bal = rh - lh;
+		node->height = max(rh, lh) + 1;
+		if (abs(bal) == 2) {
+			int is_double = (bal < 0 && oldbal > 0);
+			int to_left = (bal == 2);
+			
+			tree_rotate(ptree, node, old, is_double, to_left);
 			tree_balance(ptree, node);
 			break;
 		}	
-		od = d;
+		oldbal = bal;
 		old = node;
 		node = node->parent;
 	}

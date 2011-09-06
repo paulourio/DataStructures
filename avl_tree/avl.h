@@ -48,6 +48,4 @@ int tree_max_value(void *ptree);
 int tree_successor_value(void *ptree, const int value);
 int tree_predecessor_value(void *ptree, const int value);
 
-void rotate(void **ptree, const int value);
-
 #endif
