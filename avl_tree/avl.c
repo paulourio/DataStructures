@@ -126,12 +126,11 @@ static int tree_update_height(struct avltree *node)
 
 static void tree_left_rotate(void **ptree, struct avltree *node)
 {
-	struct avltree	*y = node->rchild, *left, *parent;
+	struct avltree	*y = node->rchild, *parent;
 	
-	left = y->lchild;
-	node->rchild = left;
-	if (left != NULL)
-		left->parent = node;
+	node->rchild = y->lchild;
+	if (y->lchild != NULL)
+		y->lchild->parent = node;
 	y->parent = node->parent;
 	parent = node->parent;
 	if (parent == NULL)
@@ -148,12 +147,11 @@ static void tree_left_rotate(void **ptree, struct avltree *node)
 
 static void tree_right_rotate(void **ptree, struct avltree *node)
 {
-	struct avltree	*y = node->lchild, *ylc, *parent;
+	struct avltree	*y = node->lchild, *parent;
 	
 	node->lchild = y->rchild;
-	ylc = y->rchild;
-	if (ylc != NULL)
-		ylc->parent = node;
+	if (y->rchild != NULL)
+		y->rchild->parent = node;
 	y->parent = node->parent;
 	parent = node->parent;
 	if (parent == NULL)
