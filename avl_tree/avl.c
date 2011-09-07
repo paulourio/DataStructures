@@ -115,11 +115,15 @@ static int tree_update_height(struct avltree *node)
 {
 	if (node == NULL)
 		return 0;
-	if (node->lchild == NULL && node->rchild == NULL)
+	if (node->lchild == NULL && node->rchild == NULL) {
+		node->height = 0;
+		debug("Node '%d' height %d (leaf)\n", node->value, node->height);
 		return 0;
+	}
 	int left = tree_update_height(node->lchild);
 	int right = tree_update_height(node->rchild);
 	node->height = max(left, right) + 1;
+	debug("Node '%d' height %d\n", node->value, node->height);
 	return node->height;
 }
 
@@ -193,8 +197,11 @@ static void tree_rotate(void **ptree, struct avltree *node,
 	}
 }
 
-
-#define	height(t)	(t != NULL?  t->height:  0)
+static void print_node(const int v)
+{
+	printf(" %d", v);
+}
+#define	height(t)	(t != NULL?  t->height:  -1)
 static void tree_balance(void **ptree, struct avltree *node)
 {
 	struct avltree *old;
@@ -211,6 +218,9 @@ static void tree_balance(void **ptree, struct avltree *node)
 			int to_left = (bal == 2);
 			
 			tree_rotate(ptree, node, old, is_double, to_left);
+			tree_walk(*ptree, print_node, WALK_PREORDER);
+			printf(" . ");
+			debug(" -- recursion --\n");
 			tree_balance(ptree, node);
 			break;
 		}	
@@ -241,6 +251,8 @@ void tree_insert(void **ptree, const int value)
 		else
 			prev->rchild = node;
 	}
+			tree_walk(*ptree, print_node, WALK_PREORDER);
+			printf(" . ");	
 	tree_balance(ptree, node);
 }
 
