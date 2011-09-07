@@ -19,7 +19,7 @@ static struct avltree *tree_new_node(const int value)
 
 	bst = malloc(sizeof(struct avltree));
 	if (bst == NULL) {
-		debug("Can't allocate memory to node of value '%d'\n", value);
+		err("Error: Can't allocate memory to node of value '%d'\n", value);
 		return NULL;
 	}
 	bst->parent = NULL;
@@ -117,13 +117,11 @@ static int tree_update_height(struct avltree *node)
 		return 0;
 	if (node->lchild == NULL && node->rchild == NULL) {
 		node->height = 0;
-		debug("Node '%d' height %d (leaf)\n", node->value, node->height);
 		return 0;
 	}
 	int left = tree_update_height(node->lchild);
 	int right = tree_update_height(node->rchild);
 	node->height = max(left, right) + 1;
-	debug("Node '%d' height %d\n", node->value, node->height);
 	return node->height;
 }
 
@@ -215,7 +213,6 @@ static void tree_balance(void **ptree, struct avltree *node)
 			int to_left = (bal == 2);
 			
 			tree_rotate(ptree, node, old, is_double, to_left);
-			debug(" -- recursion --\n");
 			tree_balance(ptree, node);
 			break;
 		}	
@@ -303,19 +300,22 @@ void tree_delete(void **ptree, const int value)
 	struct avltree   *node, *y, *x;
 
 	if (*ptree == NULL) {
-		debug("Empty tree.\n");
+		err("Empty tree.\n");
 		return;
 	}
 	node = tree_search(*ptree, value);
 	if (node == NULL) {
-		debug("Node '%d' was not found.\n", value);
+		err("Node '%d' was not found.\n", value);
 		return;
 	}
 	y = tree_which_node(node);
 	x = tree_which_son_node(y);
+	if (x != NULL)
+		x->parent = y->parent;
 	tree_update_father_node(ptree, y, x);
 	if (y != node)
 		node->value = y->value;
+	tree_balance(ptree, y->parent);
 	free(y);
 }
 

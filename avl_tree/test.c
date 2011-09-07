@@ -33,15 +33,16 @@ int main(void)
 	for (i=0; valores[i] != 0; i++) {
 		debug("Inserting %d \n", valores[i]);
 		tree_insert(&arvore, valores[i]);
-		
-		//tree_walk(arvore, print_node, WALK_PREORDER);
-		//printf(" . ");
 	}
 
-	debug("\nPrinting\n");
-	tree_walk(arvore, print_node, WALK_PREORDER);
-	fflush(stdout);
-	debug("Free'ing\n");
+	for ( ; i >= 0; i--) {
+		debug("Remove %d \n", valores[i]);
+		tree_delete(&arvore, valores[i]);
+		
+		tree_walk(arvore, print_node, WALK_PREORDER);
+		printf(" . ");
+	}
+	
 	tree_free(&arvore);
 	return EXIT_SUCCESS;
 }
