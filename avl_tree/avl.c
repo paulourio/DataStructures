@@ -19,7 +19,8 @@ static struct avltree *tree_new_node(const int value)
 
 	bst = malloc(sizeof(struct avltree));
 	if (bst == NULL) {
-		err("Error: Can't allocate memory to node of value '%d'\n", value);
+		err("Error: Can't allocate memory to node of value '%d'\n", 
+			value);
 		return NULL;
 	}
 	bst->parent = NULL;
@@ -187,11 +188,10 @@ static void tree_rotate(void **ptree, struct avltree *node,
 			tree_left_rotate(ptree, node);
 		}
 	} else {
-		if (to_left) {
+		if (to_left)
 			tree_left_rotate(ptree, node);
-		} else {
+		else
 			tree_right_rotate(ptree, node);
-		}
 	}
 }
 
