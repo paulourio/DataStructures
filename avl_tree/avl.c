@@ -10,6 +10,13 @@
 #include <math.h>
 #include "avl.h"
 
+//#define TESTING
+
+#ifdef TESTING
+#	include <assert.h>
+#endif
+
+
 #define	max(a,b)	(a > b?	a: b)
 
 /* Allocate memory for a new node */
@@ -62,6 +69,34 @@ static struct avltree *tree_max(struct avltree *ptree)
 	else
 		return ptree;
 }
+
+
+#ifdef TESTING
+/* Will not admit duplicate values in tree */
+static void tree_test(struct avltree *ptree)
+{
+	if (ptree == NULL)
+		return;
+	if (ptree->parent != NULL) {
+		struct avltree *parent = ptree->parent;
+		int left_child = parent->lchild == ptree;
+		int right_child = parent->rchild == ptree;
+		
+		assert(left_child || right_child);
+		assert(left_child != right_child);
+	}
+	if (ptree->lchild != NULL) {
+		tree_test(ptree->lchild);
+		assert(tree_max(ptree->lchild)->value < ptree->value);
+	}
+	if (ptree->rchild != NULL) {
+		tree_test(ptree->rchild);
+		assert(tree_max(ptree->rchild)->value > ptree->value);
+	}
+}
+#else
+#	define tree_test(p)
+#endif
 
 
 /* Finds the successor node */
@@ -199,8 +234,8 @@ static void tree_rotate(void **ptree, struct avltree *node,
 #define	height(t)	(t != NULL?  t->height:  -1)
 static void tree_balance(void **ptree, struct avltree *node)
 {
-	struct avltree *old;
-	int bal, oldbal;
+	struct avltree *old = NULL;
+	int bal, oldbal = 0;
 	
 	while (node != NULL) {
 		int rh = height(node->rchild);
@@ -244,6 +279,7 @@ void tree_insert(void **ptree, const int value)
 			prev->rchild = node;
 	}
 	tree_balance(ptree, node);
+	tree_test(*ptree);
 }
 
 
@@ -317,6 +353,7 @@ void tree_delete(void **ptree, const int value)
 		node->value = y->value;
 	tree_balance(ptree, y->parent);
 	free(y);
+	tree_test(*ptree);
 }
 
 
