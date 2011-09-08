@@ -198,6 +198,8 @@ void tree_delete(void **ptree, const int value)
 	}
 	y = tree_which_node(node);
 	x = tree_which_son_node(y);
+	if (x != NULL)
+		x->parent = y->parent;	
 	tree_update_father_node(ptree, y, x);
 	if (y != node)
 		node->value = y->value;
