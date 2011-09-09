@@ -234,7 +234,7 @@ static void tree_rotate(void **ptree, struct avltree *node,
 #define	height(t)	(t != NULL?  t->height:  -1)
 static void tree_balance(void **ptree, struct avltree *node)
 {
-	struct avltree *old = NULL;
+	struct avltree	*old = NULL;
 	int bal, oldbal = 0;
 	
 	while (node != NULL) {
@@ -252,8 +252,7 @@ static void tree_balance(void **ptree, struct avltree *node)
 			break;
 		}	
 		oldbal = bal;
-		old = node;
-		node = node->parent;
+		node = (old = node)->parent;
 	}
 }
 
@@ -261,7 +260,7 @@ static void tree_balance(void **ptree, struct avltree *node)
 /* Insert a value in the tree */
 void tree_insert(void **ptree, const int value)
 {
-	struct avltree   *prev = NULL, *bst = *ptree,
+	struct avltree	*prev = NULL, *bst = *ptree,
 			*node = tree_new_node(value);
 
 	while (bst != NULL) {
@@ -269,9 +268,9 @@ void tree_insert(void **ptree, const int value)
 		bst = (value < bst->value)?  bst->lchild:  bst->rchild;
 	}
 	node->parent = prev;
-	if (prev == NULL)
+	if (prev == NULL) {
 		*ptree = node;		/* The tree is empty. */
-	else {
+	} else {
 		node->height = prev->height + 1;
 		if (value < prev->value)
 			prev->lchild = node;
