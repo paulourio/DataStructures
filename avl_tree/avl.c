@@ -311,7 +311,7 @@ static struct avltree *tree_which_son_node(struct avltree *node)
  * is on left or right of parent node.
  */
 static void tree_update_father_node(void **ptree, struct avltree *node,
-					struct avltree *new_son)
+				    struct avltree *new_son)
 {
 	struct avltree	*pai = node->parent;
 
