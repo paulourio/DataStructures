@@ -27,13 +27,13 @@ struct stack {
 typedef struct stack *  stack;
 
 
-stack stack_new(void);
-void stack_free(const stack s) __nonnull ((1));
+extern stack stack_new(void);
+extern void stack_free(const stack s) __nonnull ((1));
 
 #define stack_isempty(s)    (s->top == NULL)
 #define stack_top(s)        (!stack_isempty(s)? s->top->data: 0)
 
-void stack_push(const stack s, const int data) __nonnull ((1));
-int stack_pop(const stack s) __nonnull ((1));
+extern void stack_push(const stack s, const int data) __nonnull ((1));
+extern int stack_pop(const stack s) __nonnull ((1));
 
 #endif /* STACK_H_INCLUDE */
