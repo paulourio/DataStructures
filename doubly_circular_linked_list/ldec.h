@@ -41,32 +41,37 @@ typedef bool (*f_lst_cmp_node)(const int);
 /* Note: ldec_setmax receives a (ldec *lst, int limit) */
 #define ldec_setmax(lst,limit)	((*lst)->maxsize = limit)
 
-void ldec_test(const ldec *p_stp) __nonnull ((1));
-void ldec_init(ldec *lst) __nonnull ((1));
-void ldec_free(ldec *lst) __nonnull ((1));
-void ldec_clear(ldec *lst) __nonnull ((1));
+extern void ldec_test(const ldec *p_stp) __nonnull ((1));
+extern void ldec_init(ldec *lst) __nonnull ((1));
+extern void ldec_free(ldec *lst) __nonnull ((1));
+extern void ldec_clear(ldec *lst) __nonnull ((1));
 
-void ldec_print(const ldec *lst) __nonnull ((1));
+extern void ldec_print(const ldec *lst) __nonnull ((1));
 
-void ldec_insert_front(register ldec *lst, const int value) __nonnull ((1));
-void ldec_insert_back(register ldec *lst, const int value) __nonnull ((1));
-void ldec_insert_pos(ldec *lst, int pos, const int value) __nonnull ((1));
-void ldec_fill(ldec *lst, const int items) __nonnull ((1));
+extern void ldec_insert_front(register ldec *lst, const int value) 
+		__nonnull ((1));
+extern void ldec_insert_back(register ldec *lst, const int value) 
+		__nonnull ((1));
+extern void ldec_insert_pos(ldec *lst, int pos, const int value) 
+		__nonnull ((1));
+extern void ldec_fill(ldec *lst, const int items) __nonnull ((1));
 
-bool ldec_sorted(const ldec *lst) __wur __nonnull ((1));
+extern bool ldec_sorted(const ldec *lst) __wur __nonnull ((1));
 
-void ldec_remove_front(ldec *lst) __nonnull ((1));
-void ldec_remove_back(ldec *lst) __nonnull ((1));
-void ldec_remove_pos(ldec *lst, int pos) __nonnull ((1));
-int ldec_delete_if(ldec *lst, const f_lst_cmp_node fcmp) __nonnull ((1));
-int ldec_remove_value(ldec *lst, const int value) __nonnull ((1));
-int ldec_pop_back(ldec *lst) __nonnull ((1));
+extern void ldec_remove_front(ldec *lst) __nonnull ((1));
+extern void ldec_remove_back(ldec *lst) __nonnull ((1));
+extern void ldec_remove_pos(ldec *lst, int pos) __nonnull ((1));
+extern int ldec_delete_if(ldec *lst, const f_lst_cmp_node fcmp) 
+		__nonnull ((1));
+extern int ldec_remove_value(ldec *lst, const int value) __nonnull ((1));
+extern int ldec_pop_back(ldec *lst) __nonnull ((1));
 
-int ldec_count_if(ldec *lst, const f_lst_cmp_node fcmp) __nonnull ((1)) __wur;
+extern int ldec_count_if(ldec *lst, const f_lst_cmp_node fcmp) 
+		__nonnull ((1)) __wur;
 
-int *ldec_get(register ldec *lst, register int index) __nonnull ((1));
+extern int *ldec_get(register ldec *lst, register int index) __nonnull ((1));
 
-int ldec_back_value(register ldec *lst) __nonnull ((1));
-int ldec_front_value(register ldec *lst) __nonnull ((1));
+extern int ldec_back_value(register ldec *lst) __nonnull ((1));
+extern int ldec_front_value(register ldec *lst) __nonnull ((1));
 
 #endif // LDEC_H_INCLUDED
