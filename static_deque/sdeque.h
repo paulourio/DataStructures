@@ -11,16 +11,16 @@ struct sdeque {
 
 typedef struct sdeque *	 sdeque;
 
-void sdeque_init(sdeque *sq, const int size) __nonnull ((1));
-void sdeque_free(sdeque *sq) __nonnull ((1));
+extern void sdeque_init(sdeque *sq, const int size) __nonnull ((1));
+extern void sdeque_free(sdeque *sq) __nonnull ((1));
 
-void sdeque_test(const sdeque sq);
+extern void sdeque_test(const sdeque sq);
 
-void sdeque_push_front(sdeque sq, const int value) __nonnull ((1));
-void sdeque_push_back(sdeque sq, const int value) __nonnull ((1));
+extern void sdeque_push_front(sdeque sq, const int value) __nonnull ((1));
+extern void sdeque_push_back(sdeque sq, const int value) __nonnull ((1));
 
-int sdeque_pop_front(sdeque sq) __nonnull ((1));
-int sdeque_pop_back(sdeque sq) __nonnull ((1));
+extern int sdeque_pop_front(sdeque sq) __nonnull ((1));
+extern int sdeque_pop_back(sdeque sq) __nonnull ((1));
 
 #define sdeque_size(s)	  ((s)->size)
 #define sdeque_maxsize(s)   ((s)->maxsize)
