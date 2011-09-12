@@ -30,13 +30,13 @@ typedef struct deque *  deque;
 #define deque_back_value(dq)	(deque_isempty(dq)? 0: dq->back->data)
 #define deque_front_value(dq)   (deque_isempty(dq)? 0: dq->front->data)
 
-deque deque_new(const int limit);   // 0 = No limit
-void deque_free(const deque dq);
-void deque_test(const deque dq);
+extern deque deque_new(const int limit);   // 0 = No limit
+extern void deque_free(const deque dq);
+extern void deque_test(const deque dq);
 
-bool deque_push_front(const deque dq, const int data) __nonnull ((1));
-bool deque_push_back(const deque dq, const int data) __nonnull ((1));
-int deque_pop_front(const deque dq) __wur __nonnull ((1));
-int deque_pop_back(const deque dq) __wur __nonnull ((1));
+extern bool deque_push_front(const deque dq, const int data) __nonnull ((1));
+extern bool deque_push_back(const deque dq, const int data) __nonnull ((1));
+extern int deque_pop_front(const deque dq) __wur __nonnull ((1));
+extern int deque_pop_back(const deque dq) __wur __nonnull ((1));
 
 #endif /* DEQUE_H_INCLUDED */
