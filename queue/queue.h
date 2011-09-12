@@ -30,13 +30,13 @@ struct linked_queue {
 typedef struct linked_queue *	linked_queue;
 
 
-void linked_queue_test(const linked_queue queue);
+extern void linked_queue_test(const linked_queue queue);
 
-linked_queue linked_queue_new(const int limit);
-void linked_queue_free(const linked_queue queue) __nonnull ((1));
+extern linked_queue linked_queue_new(const int limit);
+extern void linked_queue_free(const linked_queue queue) __nonnull ((1));
 
-bool linked_queue_enqueue(const linked_queue queue, const int data) __nonnull();
-int linked_queue_dequeue(const linked_queue queue) __nonnull ((1));
+extern bool linked_queue_enqueue(const linked_queue queue, const int data);
+extern int linked_queue_dequeue(const linked_queue queue) __nonnull ((1));
 
 #define linked_queue_size(queue)	(queue->count)
 #define linked_queue_empty(queue)   (linked_queue_size(queue) == 0)
