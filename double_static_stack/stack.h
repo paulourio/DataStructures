@@ -13,16 +13,16 @@ struct dstack {
 
 typedef struct dstack *	 dstack;
 
-void dstack_init(dstack *ds, const size_t size) __nonnull ((1));
-void dstack_free(dstack *ds) __nonnull ((1));
+extern void dstack_init(dstack *ds, const size_t size) __nonnull ((1));
+extern void dstack_free(dstack *ds) __nonnull ((1));
 
-void dstack_test(const dstack ds);
+extern void dstack_test(const dstack ds);
 
-void dstack_left_push(const dstack ds, const int value) __nonnull ((1));
-void dstack_right_push(const dstack ds, const int value) __nonnull ((1));
+extern void dstack_left_push(const dstack ds, const int value) __nonnull ((1));
+extern void dstack_right_push(const dstack ds, const int value) __nonnull ((1));
 
-int dstack_left_pop(const dstack ds) __nonnull ((1));
-int dstack_right_pop(const dstack ds) __nonnull ((1));
+extern int dstack_left_pop(const dstack ds) __nonnull ((1));
+extern int dstack_right_pop(const dstack ds) __nonnull ((1));
 
 #define dstack_left_isempty(s)  ((s)->left_top == -1)
 #define dstack_left_top(s)	  (!dstack_left_isempty(s)\
