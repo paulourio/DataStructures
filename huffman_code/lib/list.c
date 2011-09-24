@@ -1,266 +1,169 @@
 /*
- *  Author: Paulo Roberto Urio
- *  Date: 2 de Maio de 2011
- *  Description: Linked list source-code.
+ * Author: Paulo Roberto Urio
+ * Date: September, 2011
+ * Description: Linked list
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <assert.h>
-#include "list.h"
+#include <list.h>
 
-#define create_node(node,next_node) 			\
-	{						\
-		node = malloc(sizeof(lst_node));	\
-		assert(node != NULL);	   		\
-		node->value = value;			\
-		node->next = next_node;	 		\
-	}
-
-
-__always_inline __nonnull ((1))
-inline void list_test(const list *lst)
+static void list_free_node(const list *l, struct lnode *n)
 {
-	assert(*lst != NULL);
+	if (l->free_value != NULL)
+		l->free_value(n->value);
+	free(n);
 }
 
-
-void list_clear(register list *lst)
+void list_clear(list *l)
 {
-	list	current = *lst, next;
+	struct lnode *current = l->front, *next;
 
-	while (current) {
+	while (current != NULL) {
 		next = current->next;
+		list_free_node(l, current);
 		free(current);
 		current = next;
 	}
-	*lst = NULL;
+	l->front = NULL;
+	l->size = 0;
 }
 
-
-bool list_isempty(const list *lst)
+list *list_new(f_list_free_value free_value)
 {
-	return (lst == NULL || *lst == NULL);
+	list *l = malloc(sizeof(list));
+	l->front = NULL;
+	l->size = 0;
+	l->compare = NULL;
+	l->free_value = free_value;
+	return l;
 }
 
-
-void list_print(const list *lst)
+/* Returns NULL everytime. */
+list *list_free(list *l)
 {
-	list	node = *lst;
-
-	printf("[");
-	while (node != NULL) {
-		if (*lst != node)
-			printf(", ");
-		printf("%i", node->value);
-		node = node->next;
-	}
-	puts("]");
+	list_clear(l);
+	free(l);
+	return NULL;
 }
 
-
-int *list_get(register list *lst, register int index)
+void list_set_compare_function(list *l, f_list_cmp compare)
 {
-	list	node = *lst;
-
-	while (node != NULL && index--)
-		node = node->next;
-	return node != NULL?  &node->value:  NULL;
+	if (compare != NULL)
+		l->compare = compare;
+	else
+		fprintf(stderr, "Compare method not defined.\n");
 }
 
-
-list list_get_back_node(const list *lst)
+int list_size(const list *l)
 {
-	list	node = *lst;
-
-	if (node == NULL)
-		return (NULL);
-	while (node->next)
-		node = node->next;
-	return node;
+	return l->size;
 }
 
-
-// Warning: We do not check for invalid arguments.
-__always_inline __nonnull ((1))
-static void list_remove_node(list *front, list node, list previous)
+int list_isempty(const list *l)
 {
+	return (list_size(l) == 0);
+}
+
+static int list_compare(const list *l, const struct value *a, 
+		const struct value *b)
+{
+	if (l->compare != NULL)
+		return l->compare(a, b);
+	/* If compare function is not defined, value will be compared as int */
+	int *_a = (void *) a, *_b = (void *) b;
+
+	if (_a < _b)
+		return -1;
+	else if (_a > _b)
+		return 1;
+	return 0;
+}
+
+static struct value *list_remove_node(list *l, struct lnode *node, 
+		struct lnode *previous)
+{
+	struct value *result = NULL;
+
 	if (previous != NULL)
 		previous->next = node->next;
 	else
-		*front = node->next;
+		l->front = node->next;
+	result = node->value;
 	free(node);
-}
-
-
-size_t list_delete_if(list *lst, const f_lst_cmp_node fcmp)
-{
-	list	node = *lst, next, previous = NULL;
-	size_t  result = 0;
-
-	if (node == NULL)
-		return (0);
-	while (node != NULL) {
-		next = node->next;
-		if (fcmp(node->value)) {
-			list_remove_node(lst, node, previous);
-			result++;
-		} else
-			previous = node;
-		node = next;
-	}
+	l->size--;
 	return result;
 }
 
-
-size_t list_remove(const list *lst, const int value)
+struct value *list_remove(list *l, const struct value *value)
 {
-	list	prev = NULL, node = *lst;
-	size_t  count = 0;
+	struct lnode *prev = NULL, *node = l->front;
+	struct value *result = NULL;
 
 	while (node != NULL) {
-		list	next = node->next;
+		struct lnode *next = node->next;
 
-		if (node->value == value) {
-			list_remove_node((list *) lst, node, prev);
-			count++;
-		} else
+		if (list_compare(l, node->value, value) == 0)
+			result = list_remove_node(l, node, prev);
+		else
 			prev = node;
 		node = next;
 	}
-	return count;
-}
-
-
-void list_remove_front(register list *lst)
-{
-	if (*lst == NULL)
-		return;
-	list_remove_node(lst, *lst, NULL);
-}
-
-
-void list_remove_back(register list *lst)
-{
-	list	prev = NULL, node = *lst;
-
-	if (node == NULL)
-		return;
-	while (node->next && (node = (prev = node)->next))
-		; /* VOID */
-	list_remove_node(lst, node, prev);
-}
-
-
-void list_remove_pos(register list *lst, size_t pos)
-{
-	list	prev = NULL, node = *lst;
-
-	while (pos-- && node->next && (node = (prev = node)->next))
-		; /* VOID */
-	list_remove_node(lst, node, prev);
-}
-
-
-__always_inline __nonnull ((1))
-static inline void *list_insert_after_node(list node, const int value)
-{
-	list	new_node;
-
-	create_node(new_node, (node? node->next: NULL));
-	if (node)
-		node->next = new_node;
-	return new_node;
-}
-
-
-void list_insert_pos(list *lst, size_t pos, const int value)
-{
-	list	new_node, node = *lst;
-
-	while (pos != 0 && --pos && (node = node->next))
-		; /* VOID */
-	new_node = list_insert_after_node(node, value);
-	if (*lst == NULL)
-		*lst = new_node;
-}
-
-
-void list_insert_front(list *lst, const int value)
-{
-	list	new_node;
-
-	create_node(new_node,*lst);
-	*lst = new_node;
-}
-
-
-void list_insert_back(list *lst, const int value)
-{
-	list	node = *lst;
-
-	if (node == NULL) {
-		list_insert_front(lst, value);
-		return;
-	}
-	while (node->next && (node = node->next))
-		if (node->next == NULL)
-			break;
-	if (node != NULL)
-		list_insert_after_node(node, value);
-}
-
-
-void list_insert_sorted(list *lst, const int value)
-{
-	list	node = *lst;
-
-	if (node == NULL || node->value >= value) {
-		list_insert_front(lst, value);
-		return;
-	}
-	while (node->next != NULL) {
-		if (node->next->value >= value)
-			break;
-		node = node->next;
-	}
-	list_insert_after_node(node, value);
-}
-
-
-void list_fill(list *lst, const size_t items)
-{
-	size_t  i;
-
-	for (i=0; i<items; i++)
-		list_insert_front(lst, (int) (items - i));
-}
-
-
-size_t list_count_if(list *lst, const f_lst_cmp_node fcmp)
-{
-	list	node = *lst;
-	size_t  result = 0;
-
-	if (node == NULL)
-		return (0);
-	while (node != NULL) {
-		if (fcmp(node->value))
-			result++;
-		node = node->next;
-	}
 	return result;
 }
 
-
-bool list_sorted(list *lst)
+struct value *list_remove_front(list *l)
 {
-	list	node = *lst;
-	int	 prev;
+	if (l->front == NULL)
+		return NULL;
+	return list_remove_node(l, l->front, NULL);
+}
+
+static struct lnode *list_new_node(struct value *v)
+{
+	struct lnode *new_node;
+
+	new_node = malloc(sizeof(struct lnode));
+	if (new_node == NULL) {
+		fprintf(stderr, "Can't allocate memory to linked list node.\n");
+		exit(1);
+	}
+	new_node->value = v;
+	new_node->next = NULL;  
+	return new_node;
+}
+	
+static struct lnode *list_insert_after_node(struct lnode *node, 
+		struct value *v)
+{
+	struct lnode *n = list_new_node(v);
 
 	if (node != NULL)
-		while ((prev = node->value) && (node = node->next))
-			if (prev >= node->value)
-				return false;
-	return true;
+		node->next = n;
+	return n;
 }
+
+void list_insert_front(list *l, struct value *v)
+{
+	struct lnode *n = list_new_node(v);
+
+	n->next = l->front;
+	l->front = n;
+	l->size++;
+}
+
+void list_insert_sorted(list *l, struct value *v)
+{
+	struct lnode *n = l->front;
+
+	if (n == NULL || list_compare(l, n->value, v) >= 0) {
+		list_insert_front(l, v);
+		return;
+	}
+	while (n->next != NULL) {
+		if (list_compare(l, n->value, v) >= 0)
+			break;
+		n = n->next;
+	}
+	list_insert_after_node(n, v);
+	l->size++;
+}
+
+

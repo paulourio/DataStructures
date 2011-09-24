@@ -1,0 +1,13 @@
+f 1 f 2 f 3 f 4 p e
+f 4 f 3 p e
+f 4 s 1 s 5 p e
+s 5 s 4 s 3 s 2 s 1 p e
+s 1 s 2 s 3 s 4 s 5 p e
+f 4 f 3 d 3 p e
+f 4 f 3 d 4 p e
+d 0 p e
+s 0 d 0 p e
+f 3 s 4 d 3 s 1 p e
+f 4 f 3 f 2 f 1 x p e
+x p e
+x f 1 x s 3 x s 4 d 2 p e
