@@ -28,9 +28,10 @@ typedef struct {
 } list;
 
 extern void list_clear(list *l);
-extern list *list_new(f_list_free_value free_value);
+extern list *list_new(void);
 extern list *list_free(list *l);
 extern void list_set_compare_function(list *l, f_list_cmp compare);
+extern void list_set_free_value_method(list *l, f_list_free_value method);
 extern int list_size(const list *l);
 extern int list_isempty(const list *l);
 extern struct value *list_remove(list *l, const struct value *value);

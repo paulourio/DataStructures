@@ -23,7 +23,7 @@ static int comp_data(const struct value *a, const struct value *b)
 
 int main(void)
 {
-	list *test = list_new(NULL);
+	list *test = list_new();
 	list_set_compare_function(test, comp_data);
 
 	char cmd;
@@ -65,7 +65,7 @@ int main(void)
 			break;
 		case 'e': /* End of test */
 			(void) list_free(test);
-			test = list_new(NULL);
+			test = list_new();
 			list_set_compare_function(test, comp_data);
 			break;
 		default:

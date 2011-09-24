@@ -26,13 +26,13 @@ void list_clear(list *l)
 	l->size = 0;
 }
 
-list *list_new(f_list_free_value free_value)
+list *list_new(void)
 {
 	list *l = malloc(sizeof(list));
 	l->front = NULL;
 	l->size = 0;
 	l->compare = NULL;
-	l->free_value = free_value;
+	l->free_value = NULL;
 	return l;
 }
 
@@ -46,10 +46,12 @@ list *list_free(list *l)
 
 void list_set_compare_function(list *l, f_list_cmp compare)
 {
-	if (compare != NULL)
-		l->compare = compare;
-	else
-		fprintf(stderr, "Compare method not defined.\n");
+	l->compare = compare;
+}
+
+void list_set_free_value_method(list *l, f_list_free_value method)
+{
+	l->free_value = method;
 }
 
 int list_size(const list *l)
