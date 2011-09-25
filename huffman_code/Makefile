@@ -45,5 +45,14 @@ list_spec.o: include/list.h list.o spec/list_spec.c
 test_list: list_spec.o list.o spec/list_spec.c
 	$(CC) $(LDFLAGS) $(INCLUDES) list_spec.o list.o -o test_list
 
+test_huffman: huffman.o huffman.h list.o tree.o test_huffman.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c test_huffman.c
+	$(CC) $(LDFLAGS) $(INCLUDES) huffman.o test_huffman.o list.o tree.o \
+		-o test_huffman
+
+test:
+	./test_list < spec/list.in | diff spec/list.sol -
+
+
 clean:
 	$(RM) $(PROGRAMA) $(OBJS) test.o list_spec.o test_list

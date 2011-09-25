@@ -88,6 +88,15 @@ int main(void)
     list_delete_if(&lst, multiplo_5);
     list_print(&lst);
 
+    printf("Testing sorting");
+    list_insert_sorted(&lst, 2);
+    list_insert_sorted(&lst, 6);
+    list_insert_sorted(&lst, 1);
+    list_insert_sorted(&lst, 3);
+    list_insert_sorted(&lst, 5);
+    list_insert_sorted(&lst, 4);
+    list_print(&lst);
+
     list_clear(&lst);
     return (EXIT_SUCCESS);
 }

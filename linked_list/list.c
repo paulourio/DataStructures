@@ -211,6 +211,23 @@ void list_insert_back(list *lst, const int value)
 }
 
 
+void list_insert_sorted(list *lst, const int value)
+{
+	list	node = *lst;
+
+	if (node == NULL || node->value >= value) {
+		list_insert_front(lst, value);
+		return;
+	}
+	while (node->next != NULL) {
+		if (node->next->value >= value)
+			break;
+		node = node->next;
+	}
+	list_insert_after_node(node, value);
+}
+
+
 void list_fill(list *lst, const size_t items)
 {
 	size_t  i;

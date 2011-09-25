@@ -28,17 +28,15 @@ typedef bool (*f_lst_cmp_node)(const int);
 /* Test if the list is valid (assert will fail when list is empty) */
 extern void list_test(const list *lst) __nonnull ((1));
 extern void list_clear(register list *lst) __nonnull ((1));
-extern bool list_isempty(const list *lst) __attribute_pure__
-    __attribute_warn_unused_result__;
+extern bool list_isempty(const list *lst) __attribute_pure__ __wur;
 
 /* Print all items in the format [0, 1, 2, ...] */
 extern void list_print(const list *lst) __nonnull ((1));
 
 extern int *list_get(register list *lst, register int index) __nonnull ((1))
-    __attribute_warn_unused_result__;
+    __wur;
     
-extern list list_get_back_node(const list *lst) __nonnull ((1))
-    __attribute_warn_unused_result__;
+extern list list_get_back_node(const list *lst) __nonnull ((1)) __wur;
 
 /* Remove methods */
 extern size_t list_remove(const list *lst, const int value) __nonnull ((1));
@@ -53,13 +51,14 @@ extern void list_insert_pos(list *lst, size_t pos, const int value)
 	__nonnull ((1));
 extern void list_insert_front(list *lst, const int value) __nonnull ((1));
 extern void list_insert_back(list *lst, const int value) __nonnull ((1));
+extern void list_insert_sorted(list *lst, const int value) __nonnull ((1));
 
 /* Populate a list with items, starting at 1. */
 extern void list_fill(list *lst, const size_t items) __nonnull ((1));
 
 /* Count how many elements are in the list (It uses the compare function */
 extern size_t list_count_if(list *lst, const f_lst_cmp_node fcmp) 
-	__nonnull ((1,2)) __attribute_warn_unused_result__;
+	__nonnull ((1,2)) __wur;
 
 extern bool list_sorted(list *lst) __nonnull((1));
 

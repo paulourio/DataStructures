@@ -207,6 +207,16 @@ void tree_delete(void **ptree, const int value)
 }
 
 
+/* Forced method to set childs. */
+void tree_set_childs(void *node, void *left, void *right)
+{
+	struct bstree *parent = node;
+
+	parent->lchild = left;
+	parent->rchild = right;
+}
+
+
 /* Walk the tree in three orders */
 void tree_walk(void *ptree, register const fbst_print cblk,
 		register const enum TREE_WALKORDER worder)
@@ -267,4 +277,20 @@ int tree_predecessor_value(void *ptree, const int value)
 	no = tree_search(ptree, value);
 	pred = tree_predecessor(no);
 	return pred != NULL?  pred->value:  NOT_FOUND;
+}
+
+
+int tree_get_value(void *ptree)
+{
+	struct bstree	*no = ptree;
+
+	if (no != NULL)
+		return no->value;
+	return 0;
+}
+
+
+int tree_root_value(void *ptree)
+{
+	return tree_get_value(ptree);
 }

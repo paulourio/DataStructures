@@ -33,11 +33,14 @@ extern void *tree_new(void);
 extern void tree_free(void **ptr) __nonnull ((1));
 extern void tree_insert(void **ptree, const int value) __nonnull ((1));
 extern void tree_delete(void **ptree, const int value) __nonnull ((1));
+extern void tree_set_childs(void *node, void *left, void *right);
 extern void tree_walk(void *ptree, register const fbst_print cblk,
 		register const enum TREE_WALKORDER worder);
 extern int tree_min_value(void *ptree);
 extern int tree_max_value(void *ptree);
 extern int tree_successor_value(void *ptree, const int value);
 extern int tree_predecessor_value(void *ptree, const int value);
+extern int tree_get_value(void *ptree);
+extern int tree_root_value(void *ptree);
 
 #endif

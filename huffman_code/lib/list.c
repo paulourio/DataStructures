@@ -19,7 +19,6 @@ void list_clear(list *l)
 	while (current != NULL) {
 		next = current->next;
 		list_free_node(l, current);
-		free(current);
 		current = next;
 	}
 	l->front = NULL;
@@ -94,6 +93,28 @@ static struct value *list_remove_node(list *l, struct lnode *node,
 	return result;
 }
 
+/* Try to find a node in the list with the same value of
+ * parameter v. This do not mean that v is the same
+ * in the linked list.  If parameter compare is null,
+ * it will try to use the global compare method. */
+struct value *list_find(list *l, const struct value *v, f_list_cmp compare)
+{
+	struct lnode *node = l->front;
+
+	while (node != NULL) {
+		int ret;
+		
+		if (compare != NULL)
+			ret = compare(node->value, v);
+		else
+			list_compare(l, node->value, v);
+		if (ret == 0)
+			return node->value;
+		node = node->next;
+	}
+	return NULL;
+}
+
 struct value *list_remove(list *l, const struct value *value)
 {
 	struct lnode *prev = NULL, *node = l->front;
@@ -102,10 +123,12 @@ struct value *list_remove(list *l, const struct value *value)
 	while (node != NULL) {
 		struct lnode *next = node->next;
 
-		if (list_compare(l, node->value, value) == 0)
+		if (list_compare(l, node->value, value) == 0) {
 			result = list_remove_node(l, node, prev);
-		else
+			break;
+		} else {
 			prev = node;
+		}
 		node = next;
 	}
 	return result;
@@ -137,8 +160,10 @@ static struct lnode *list_insert_after_node(struct lnode *node,
 {
 	struct lnode *n = list_new_node(v);
 
-	if (node != NULL)
+	if (node != NULL) {
+		n->next = node->next;
 		node->next = n;
+	}
 	return n;
 }
 
@@ -160,7 +185,7 @@ void list_insert_sorted(list *l, struct value *v)
 		return;
 	}
 	while (n->next != NULL) {
-		if (list_compare(l, n->value, v) >= 0)
+		if (list_compare(l, v, n->next->value) < 0)
 			break;
 		n = n->next;
 	}

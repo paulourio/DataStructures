@@ -36,10 +36,10 @@ static struct bstree *tree_new_node(const int value)
 
 
 /* Search a value in the tree and returns its node */
-static struct bstree *tree_search(struct bstree *ptree, const int valor)
+static struct bstree *tree_search(struct bstree *ptree, const int value)
 {
-	while (ptree != NULL && valor != ptree->value)
-		if (valor < ptree->value)
+	while (ptree != NULL && value != ptree->value)
+		if (value < ptree->value)
 			ptree = ptree->lchild;
 		else
 			ptree = ptree->rchild;
