@@ -82,7 +82,6 @@ void *huffman_free(void *pcode)
 
 static void process_char(struct huffdata *code, const unsigned char *chr)
 {
-	fprintf(stderr, "Processing %c... ", *chr);
 	const unsigned char current = *chr;
 	struct value *new, *v;
 
@@ -96,7 +95,6 @@ static void process_char(struct huffdata *code, const unsigned char *chr)
 
 	v = list_find(code->trees, new, compare_char);
 	if (v == NULL) {
-		fprintf(stderr, "Count: ");
 		int count = 0;
 
 		while (*chr) {
@@ -105,9 +103,7 @@ static void process_char(struct huffdata *code, const unsigned char *chr)
 		}
 		new->count = count;
 		list_insert_sorted(code->trees, new);
-		fprintf(stderr, "%d\n", count);
 	} else {
-		fprintf(stderr, "Passing through.\n");
 		tree_free(&new->tree);
 		free(new);
 	}
