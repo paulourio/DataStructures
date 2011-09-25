@@ -20,7 +20,7 @@ INSANE_FLAGS=-Wshadow -Winit-self -Wredundant-decls -Wcast-align \
         -Wpacked -Wdisabled-optimization -Wmissing-braces \
         -Werror-implicit-function-declaration
 
-CFLAGS=-Wall -g -O2 -Wextra -x c -std=gnu99 -pipe -ffinite-math-only \
+CFLAGS=-Wall -g -O2 -Wextra -std=gnu99 -pipe -ffinite-math-only \
         -march=native \
 	-DHAVE_INLINE $(INSANE_FLAGS)
 
@@ -36,11 +36,17 @@ tree.o: include/tree.h lib/tree.c
 list.o: include/list.h lib/list.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c lib/list.c
 
+stack.o: include/stack.h lib/stack.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c lib/stack.c
+
 test.o: huffman.h
 	$(CC) $(CFLAGS) $(INCLUDES) -c test.c
 
 list_spec.o: include/list.h list.o spec/list_spec.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c spec/list_spec.c
+
+stack_spec.o: include/stack.h stack.o spec/stack_spec.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c spec/stack_spec.c
 
 test_list: list_spec.o list.o spec/list_spec.c
 	$(CC) $(LDFLAGS) $(INCLUDES) list_spec.o list.o -o test_list
@@ -50,9 +56,13 @@ test_huffman: huffman.o huffman.h list.o tree.o test_huffman.c
 	$(CC) $(LDFLAGS) $(INCLUDES) huffman.o test_huffman.o list.o tree.o \
 		-o test_huffman
 
-test:
-	./test_list < spec/list.in | diff spec/list.sol -
+test_stack: stack_spec.o stack.o 
+	$(CC) $(LDFLAGS) stack.o stack_spec.o -o test_stack
 
+test: test_list test_stack
+	./test_list < spec/list.in | diff spec/list.sol -
+	./test_stack
 
 clean:
-	$(RM) $(PROGRAMA) $(OBJS) test.o list_spec.o test_list
+	$(RM) $(PROGRAMA) $(OBJS) test.o list_spec.o 
+	$(RM) test_list test_stack test_huffman
