@@ -39,8 +39,7 @@ static inline int stack_top(void *pstack)
 
 extern void *stack_new(const int size);
 extern void *stack_free(void *pstack) __nonnull ((1));
-//extern void stack_push(void *pstack, const char data) __nonnull ((1));
-void stack_push(void *pstack, const int data);
+void stack_push(void *pstack, const int data) __nonnull ((1));
 extern char stack_pop(void *pstack) __nonnull ((1));
 
 #endif
