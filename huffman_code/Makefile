@@ -64,5 +64,6 @@ test: test_list test_stack
 	./test_stack
 
 clean:
-	$(RM) $(PROGRAMA) $(OBJS) test.o list_spec.o 
-	$(RM) test_list test_stack test_huffman
+	$(RM) list.o tree.o stack.o huffman.o test_huffman.o
+	$(RM) $(PROGRAMA) test.o list_spec.o test_list.o test_stack.o 
+	$(RM) test_list test_stack test_huffman stack_spec.o
