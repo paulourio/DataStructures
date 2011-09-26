@@ -45,7 +45,7 @@ static int compare_char(const struct value *a, const struct value *b)
 	return 0;
 }
 
-static void free_list_node_value(const struct value *v)
+static void free_list_node_value(struct value *v)
 {
 	if (v->tree != NULL)
 		tree_free(&v->tree);
@@ -80,9 +80,9 @@ void *huffman_free(void *pcode)
 	return NULL;
 }
 
-static void process_char(struct huffdata *code, const unsigned char *chr)
+static void process_char(struct huffdata *code, const char *chr)
 {
-	const unsigned char current = *chr;
+	const char current = *chr;
 	struct value *new, *v;
 
 	new = malloc(sizeof(struct value));
@@ -113,7 +113,7 @@ static void process_char(struct huffdata *code, const unsigned char *chr)
  * Process the input and update the tree list. The map process must be
  * executed before compress execution.
  */
-void huffman_map(void *pcode, const unsigned char *data)
+void huffman_map(void *pcode, const char *data)
 {
 	while (*data)
 		process_char(pcode, data++);
@@ -152,4 +152,26 @@ void huffman_compress(void *pcode)
 		print_data(code);
 	}
 	printf("finished\n");
+}
+
+static int node_count;
+
+static void huffman_print_node(const int v)
+{
+	char c = (char) v;
+	
+	if (c == ' ')
+		c = '~';
+	printf("%d %c ", node_count++, c);
+}
+
+void huffman_print_final_tree(void *pcode)
+{
+	struct huffdata *code = pcode;
+	struct value *v = list_get(code->trees, 0);
+	
+	if (v == NULL) {
+		fprintf(stderr, "Empty list.\n");
+	}
+	tree_print_to_bosque(v->tree);
 }

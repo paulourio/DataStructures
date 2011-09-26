@@ -17,7 +17,7 @@ struct lnode {
 /* Function to compare two nodes. */
 typedef int (*f_list_cmp)(const struct value*, const struct value *);
 
-typedef void (*f_list_free_value)(const struct value *);
+typedef void (*f_list_free_value)(struct value *);
 
 
 typedef struct {
@@ -35,6 +35,7 @@ extern void list_set_free_value_method(list *l, f_list_free_value method);
 extern int list_size(const list *l);
 extern int list_isempty(const list *l);
 extern struct value *list_find(list *l, const struct value *v, f_list_cmp compare);
+extern struct value *list_get(list *l, register int index);
 extern struct value *list_remove(list *l, const struct value *value);
 extern struct value *list_remove_front(list *l);
 extern void list_insert_front(list *l, struct value *v);

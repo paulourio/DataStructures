@@ -14,6 +14,7 @@ struct bstree {
 	void    *lchild;
 	void    *rchild;
 	int 	value;
+	int	position; /* Used to printing. */
 };
 
 
@@ -223,7 +224,7 @@ void tree_walk(void *ptree, register const fbst_print cblk,
 {
 	if (ptree != NULL) {
 		struct bstree	*node = ptree;
-
+		
 		if (worder == WALK_PREORDER)
 			cblk(node->value);
 			
@@ -293,4 +294,43 @@ int tree_get_value(void *ptree)
 int tree_root_value(void *ptree)
 {
 	return tree_get_value(ptree);
+}
+
+/* Update node positions before printing */
+static int node_position;
+static void tree_update_pos(void *ptree)
+{
+	if (ptree != NULL) {
+		struct bstree	*node = ptree;
+		
+		tree_update_pos(node->lchild);
+		node->position = node_position++;			
+		tree_update_pos(node->rchild);
+	}
+}
+
+static void tree_count_nodes(void *ptree)
+{
+	node_position = 1;
+	tree_update_pos(ptree);
+}
+
+static void tree_walk_bosque(void *ptree)
+{
+	if (ptree != NULL) {
+		struct bstree *node = ptree;
+		char c = node->value;
+		
+		if (c == ' ')
+			c = '~';		
+		printf("%d %c ", node->position, c);			
+		tree_walk_bosque(node->lchild);		
+		tree_walk_bosque(node->rchild);
+	}
+}
+
+void tree_print_to_bosque(void *ptree)
+{
+	tree_count_nodes(ptree);
+	tree_walk_bosque(ptree);
 }

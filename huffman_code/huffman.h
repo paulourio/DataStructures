@@ -6,7 +6,8 @@
 
 extern void *huffman_new(void);
 extern void *huffman_free(void *pcode);
-extern void huffman_map(void *pcode, const unsigned char *data);
+extern void huffman_map(void *pcode, const char *data);
 extern void huffman_compress(void *pcode);
+extern void huffman_print_final_tree(void *pcode);
 
 #endif

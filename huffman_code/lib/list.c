@@ -107,12 +107,21 @@ struct value *list_find(list *l, const struct value *v, f_list_cmp compare)
 		if (compare != NULL)
 			ret = compare(node->value, v);
 		else
-			list_compare(l, node->value, v);
+			ret = list_compare(l, node->value, v);
 		if (ret == 0)
 			return node->value;
 		node = node->next;
 	}
 	return NULL;
+}
+
+struct value *list_get(list *l, register int index)
+{
+	struct lnode *node = l->front;
+
+	while (node != NULL && index--)
+		node = node->next;
+	return node != NULL?  node->value:  NULL;
 }
 
 struct value *list_remove(list *l, const struct value *value)
