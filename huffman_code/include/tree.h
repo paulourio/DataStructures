@@ -21,6 +21,8 @@
 
 #define NOT_FOUND	(-1)
 
+#include <stack.h>
+#include <dict.h>
 
 struct bstree {
 	struct bstree *parent;
@@ -59,6 +61,6 @@ extern int tree_predecessor_value(void *ptree, const int value);
 extern int tree_get_value(void *ptree);
 extern int tree_root_value(void *ptree);
 extern void tree_print_to_bosque(void *ptree);
-extern void tree_create_table(void *ptree);
+extern dict *tree_create_table(void *ptree);
 
 #endif

@@ -320,6 +320,7 @@ void tree_print_to_bosque(void *ptree)
 
 /* Function ti create the huffman coding table. */
 static void *stack;
+static dict *table;
 static void tree_walk_stack(struct bstree *node)
 {
 	
@@ -327,7 +328,9 @@ static void tree_walk_stack(struct bstree *node)
 		if (tree_isleaf(node)) {
 			/* Add to table new value. */
 			char *content = stack_content(stack);
-			printf("%c: %s\n", (char) node->value, content);
+			char key[2] = { (char) node->value, 0 };
+			//printf("%c: %s\n", (char) node->value, content);
+			dict_set(table, &key, content);
 			free(content);
 		}
 		stack_push(stack, (int) '0');
@@ -340,9 +343,11 @@ static void tree_walk_stack(struct bstree *node)
 	}
 }
 
-void tree_create_table(void *ptree)
+dict *tree_create_table(void *ptree)
 {
+	table = dict_new();
 	stack = stack_new(100); /* FIXME: How to find a decent size? */
 	tree_walk_stack(ptree);
 	stack = stack_free(stack);
+	return table;
 }
