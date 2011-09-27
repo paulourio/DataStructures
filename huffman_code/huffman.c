@@ -1,5 +1,6 @@
 #include <tree.h>
 #include <list.h>
+#include <string.h>
 #include "huffman.h"
 
 #define EXTENDED_TREE (47)
@@ -11,6 +12,8 @@ struct value {
 
 struct huffdata {
 	list *trees;
+	void *final; /* Final compressed tree. */
+	dict *table;
 };
 
 static void print_data(const struct huffdata *code)
@@ -19,11 +22,11 @@ static void print_data(const struct huffdata *code)
 
 	while (n != NULL) {
 		struct value *nv = n->value;
-		fprintf(stdout, "%c:%d ", 
+		fprintf(stderr, "%c:%d ", 
 				tree_root_value(nv->tree), nv->count);
 		n = n->next;
 	}
-	fprintf(stdout, "\n");
+	fprintf(stderr, "\n");
 }
 
 static int compare_count(const void *a, const void *b)
@@ -72,6 +75,8 @@ void *huffman_new(void)
 		exit(1);
 	}
 	code->trees = list_new();
+	code->final = NULL;
+	code->table = NULL;
 	list_set_free_value_method(code->trees, free_list_node_value);
 	list_set_compare_function(code->trees, compare_count);
 	return code;
@@ -83,6 +88,8 @@ void *huffman_free(void *pcode)
 
 	if (code != NULL) {
 		code->trees = list_free(code->trees);
+		if (code->table != NULL)
+			dict_free(code->table);
 		free(code);
 	}
 	return NULL;
@@ -121,7 +128,7 @@ static void process_char(struct huffdata *code, const char *chr)
  * Process the input and update the tree list. The map process must be
  * executed before compress execution.
  */
-void huffman_map(void *pcode, const char *data)
+static void huffman_map(void *pcode, const char *data)
 {
 	while (*data)
 		process_char(pcode, data++);
@@ -145,25 +152,24 @@ static void huffman_merge(list *trees, struct value *a,
 	list_insert_sorted(trees, a);
 }
 
-void huffman_compress(void *pcode)
+static void huffman_compress_tree(void *pcode)
 {
 	struct huffdata *code = pcode;
-	
+		
 	while (list_size(code->trees) > 1) {
 		struct value *a = list_remove_front(code->trees);
 		struct value *b = list_remove_front(code->trees);
 
-		printf("Merging %c with %c\n", 
-				tree_get_value(a->tree),
-				tree_get_value(b->tree));
+		//fprintf(stderr, "Merging %c with %c\n", 
+		//		tree_get_value(a->tree),
+		//		tree_get_value(b->tree));
 		huffman_merge(code->trees, a, b);
-		print_data(code);
+		//print_data(code);
 	}
-	printf("finished\n");
+	code->final = list_get(code->trees, 0); 
 }
 
 static int node_count;
-
 static void huffman_print_node(const int v)
 {
 	char c = (char) v;
@@ -173,10 +179,10 @@ static void huffman_print_node(const int v)
 	printf("%d %c ", node_count++, c);
 }
 
-void huffman_print_final_tree(void *pcode)
+static void huffman_print_final_tree(void *pcode)
 {
 	struct huffdata *code = pcode;
-	struct value *v = list_get(code->trees, 0);
+	struct value *v = code->final;
 	
 	if (v == NULL) {
 		fprintf(stderr, "Empty list.\n");
@@ -184,11 +190,40 @@ void huffman_print_final_tree(void *pcode)
 	tree_print_to_bosque(v->tree);
 }
 
-
-void huffman_table(void *pcode)
+static void huffman_table(void *pcode)
 {
 	struct huffdata *code = pcode;
-	struct value *v = list_get(code->trees, 0);
+	struct value *v = code->final;
+
 	/* check empty list */
-	tree_create_table(v->tree);
+	code->table = tree_create_table(v->tree);
+}
+
+static int huffman_export_bits(struct huffdata *code, char *data)
+{
+	int bits = 0;
+
+	fprintf(stderr, "Result: \n");
+	while (*data) {
+		char key[2] = { *data++, 0 };
+		char *value = dict_value(code->table, (char *) &key);
+
+		fprintf(stderr, "%s", value);
+		bits += (int) strlen(value);
+	}
+	fprintf(stderr, "\n");
+	return bits;
+}
+
+void huffman_compress(void *pcode, const char *data)
+{
+	/*fprintf(stderr, "Compressing \"%s\"\n", data); */
+	huffman_map(pcode, data);
+	huffman_compress_tree(pcode);
+	huffman_table(pcode);
+	/*huffman_print_final_tree(pcode); /* Bosque */
+	int new_size = huffman_export_bits(pcode, (char *) data);
+	int old_size = (int) strlen(data);
+	fprintf(stderr, "Compressed %.2f%%\n", 
+			(1 - ((new_size/8.0) / old_size)) * 100);
 }
