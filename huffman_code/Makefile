@@ -30,7 +30,7 @@ $(PROGRAMA): $(OBJS) test.o
 huffman.o: include/list.h include/tree.h huffman.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c huffman.c
 
-tree.o: include/tree.h lib/tree.c
+tree.o: include/tree.h lib/tree.c include/stack.h 
 	$(CC) $(CFLAGS) $(INCLUDES) -c lib/tree.c
 
 list.o: include/list.h lib/list.c
@@ -51,10 +51,10 @@ stack_spec.o: include/stack.h stack.o spec/stack_spec.c
 test_list: list_spec.o list.o spec/list_spec.c
 	$(CC) $(LDFLAGS) $(INCLUDES) list_spec.o list.o -o test_list
 
-test_huffman: huffman.o huffman.h list.o tree.o test_huffman.c
+test_huffman: huffman.o huffman.h list.o tree.o test_huffman.c stack.o
 	$(CC) $(CFLAGS) $(INCLUDES) -c test_huffman.c
-	$(CC) $(LDFLAGS) $(INCLUDES) huffman.o test_huffman.o list.o tree.o \
-		-o test_huffman
+	$(CC) $(LDFLAGS) $(INCLUDES) huffman.o test_huffman.o list.o stack.o \
+		tree.o -o test_huffman
 
 test_stack: stack_spec.o stack.o 
 	$(CC) $(LDFLAGS) stack.o stack_spec.o -o test_stack

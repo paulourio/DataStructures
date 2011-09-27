@@ -8,15 +8,7 @@
  */
 #include <stdlib.h>
 #include <tree.h>
-
-struct bstree {
-	void    *parent;
-	void    *lchild;
-	void    *rchild;
-	int 	value;
-	int	position; /* Used to printing. */
-};
-
+#include <stack.h>
 
 /* Allocate memory for a new node */
 static struct bstree *tree_new_node(const int value)
@@ -109,8 +101,8 @@ void tree_free(void **ptr)
 	if (*ptr == NULL)
 		return;
 	tree = *ptr;
-	tree_free(&tree->lchild);
-	tree_free(&tree->rchild);
+	tree_free((void **) &tree->lchild);
+	tree_free((void **) &tree->rchild);
 	free(*ptr);
 	*ptr = NULL;
 }
@@ -219,24 +211,24 @@ void tree_set_childs(void *node, void *left, void *right)
 
 
 /* Walk the tree in three orders */
-void tree_walk(void *ptree, register const fbst_print cblk,
+void tree_walk(void *ptree, register const fbst_walk cblk,
 		register const enum TREE_WALKORDER worder)
 {
 	if (ptree != NULL) {
 		struct bstree	*node = ptree;
 		
 		if (worder == WALK_PREORDER)
-			cblk(node->value);
+			cblk(node);
 			
 		tree_walk(node->lchild, cblk, worder);
 		
 		if (worder == WALK_INORDER)
-			cblk(node->value);
+			cblk(node);
 			
 		tree_walk(node->rchild, cblk, worder);
 		
 		if (worder == WALK_POSORDER)
-			cblk(node->value);
+			cblk(node);
 	}
 }
 
@@ -297,40 +289,60 @@ int tree_root_value(void *ptree)
 }
 
 /* Update node positions before printing */
+/* These functions are used by tree_print_to_bosque. */
 static int node_position;
-static void tree_update_pos(void *ptree)
+static void tree_update_pos(struct bstree *node)
 {
-	if (ptree != NULL) {
-		struct bstree	*node = ptree;
-		
-		tree_update_pos(node->lchild);
-		node->position = node_position++;			
-		tree_update_pos(node->rchild);
-	}
+	node->position = node_position++;			
 }
 
 static void tree_count_nodes(void *ptree)
 {
 	node_position = 1;
-	tree_update_pos(ptree);
+	tree_walk(ptree, tree_update_pos, WALK_INORDER);
 }
 
-static void tree_walk_bosque(void *ptree)
+static void tree_walk_bosque(struct bstree *node)
 {
-	if (ptree != NULL) {
-		struct bstree *node = ptree;
-		char c = node->value;
+	char c = (char) node->value;
 		
-		if (c == ' ')
-			c = '~';		
-		printf("%d %c ", node->position, c);			
-		tree_walk_bosque(node->lchild);		
-		tree_walk_bosque(node->rchild);
-	}
+	if (c == ' ')
+		c = '~';		
+	printf("%d %c ", node->position, c);			
 }
 
 void tree_print_to_bosque(void *ptree)
 {
 	tree_count_nodes(ptree);
-	tree_walk_bosque(ptree);
+	tree_walk(ptree, tree_walk_bosque, WALK_PREORDER);
+	printf("\n");
+}
+
+/* Function ti create the huffman coding table. */
+static void *stack;
+static void tree_walk_stack(struct bstree *node)
+{
+	
+	if (node != NULL) {
+		if (tree_isleaf(node)) {
+			/* Add to table new value. */
+			char *content = stack_content(stack);
+			printf("%c: %s\n", (char) node->value, content);
+			free(content);
+		}
+		stack_push(stack, (int) '0');
+		tree_walk_stack(node->lchild);
+		(void) stack_pop(stack);
+		
+		stack_push(stack, (int) '1');	
+		tree_walk_stack(node->rchild);
+		(void) stack_pop(stack);
+	}
+}
+
+void tree_create_table(void *ptree)
+{
+	stack = stack_new(100); /* FIXME: How to find a decent size? */
+	tree_walk_stack(ptree);
+	stack = stack_free(stack);
 }

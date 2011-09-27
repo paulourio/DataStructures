@@ -1,5 +1,6 @@
 #include <stack.h>
 #include <assert.h>
+#include <string.h>
 
 void *stack_new(const int size)
 {
@@ -11,7 +12,8 @@ void *stack_new(const int size)
 		exit(1);
 	}
 	assert(size > 0);
-	stack->data = malloc(sizeof(char) * (size_t) size);
+	stack->data = malloc(sizeof(char) * (size_t) (size + 1));
+	memset(stack->data, 0, size+1);
 	if (stack->data == NULL) {
 		fprintf(stderr, "No memory for stack of size %d.\n", size);
 		free(stack);
@@ -45,8 +47,26 @@ void stack_push(void *pstack, const int data)
 char stack_pop(void *pstack)
 {
 	struct stack *stack = pstack;
+	char ret;
 
 	if (stack_isempty(stack))
 		return EMPTY_STACK;
-	return stack->data[stack->top--];
+	ret = stack->data[stack->top];
+	stack->data[stack->top--] = 0;
+	return ret;
+}
+
+char *stack_content(void *pstack)
+{
+	struct stack *stack = pstack;
+	size_t len = sizeof(char) * (stack->top + 2);
+	char *ret;
+
+	ret = malloc(len);
+	if (ret == NULL) {
+		fprintf(stderr, "Can't copy stack content.\n");
+		exit(1);
+	}
+	strcpy(ret, stack->data);
+	return ret;
 }

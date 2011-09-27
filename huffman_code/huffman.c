@@ -175,3 +175,12 @@ void huffman_print_final_tree(void *pcode)
 	}
 	tree_print_to_bosque(v->tree);
 }
+
+
+void huffman_table(void *pcode)
+{
+	struct huffdata *code = pcode;
+	struct value *v = list_get(code->trees, 0);
+	/* check empty list */
+	tree_create_table(v->tree);
+}
