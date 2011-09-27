@@ -13,7 +13,7 @@ void *stack_new(const int size)
 	}
 	assert(size > 0);
 	stack->data = malloc(sizeof(char) * (size_t) (size + 1));
-	memset(stack->data, 0, size+1);
+	memset(stack->data, 0, (size_t) size+1);
 	if (stack->data == NULL) {
 		fprintf(stderr, "No memory for stack of size %d.\n", size);
 		free(stack);
