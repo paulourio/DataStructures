@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <list.h>
 
+struct value {
+	int count;
+};
+
 static struct value *new_value(int v)
 {
 	struct value *new = malloc(sizeof(struct value));
@@ -10,9 +14,10 @@ static struct value *new_value(int v)
 	return new;
 }
 
-static int comp_data(const struct value *a, const struct value *b)
+static int comp_data(const void *a, const void *b)
 {
-	int _b = b->count, _a = a->count;
+	const struct value *pa = a, *pb = b;
+	int _b = pb->count, _a = pa->count;
 
 	if (_a > _b)
 		return 1;
