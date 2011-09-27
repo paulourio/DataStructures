@@ -4,6 +4,11 @@
 
 #define EXTENDED_TREE (47)
 
+struct value {
+	void *tree;
+	int count;
+};
+
 struct huffdata {
 	list *trees;
 };
@@ -21,10 +26,11 @@ static void print_data(const struct huffdata *code)
 	fprintf(stdout, "\n");
 }
 
-static int compare_count(const struct value *a, const struct value *b)
+static int compare_count(const void *a, const void *b)
 {
-	int va = a->count;
-	int vb = b->count;
+	const struct value *_a = a, *_b = b;
+	int va = _a->count;
+	int vb = _b->count;
 
 	if (va > vb)
 		return 1;
@@ -33,10 +39,11 @@ static int compare_count(const struct value *a, const struct value *b)
 	return 0;
 }
 
-static int compare_char(const struct value *a, const struct value *b)
+static int compare_char(const void *a, const void *b)
 {
-	int va = tree_root_value(a->tree);
-	int vb = tree_root_value(b->tree);
+	const struct value *_a = a, *_b = b;
+	int va = tree_root_value(_a->tree);
+	int vb = tree_root_value(_b->tree);
 
 	if (va > vb)
 		return 1;
@@ -45,10 +52,11 @@ static int compare_char(const struct value *a, const struct value *b)
 	return 0;
 }
 
-static void free_list_node_value(struct value *v)
+static void free_list_node_value(void *v)
 {
-	if (v->tree != NULL)
-		tree_free(&v->tree);
+	struct value *value = v;
+	if (value->tree != NULL)
+		tree_free(&value->tree);
 	else
 		fprintf(stderr, "Trying to free a null tree.\n");
 	free(v);

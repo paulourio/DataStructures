@@ -63,13 +63,12 @@ int list_isempty(const list *l)
 	return (list_size(l) == 0);
 }
 
-static int list_compare(const list *l, const struct value *a, 
-		const struct value *b)
+static int list_compare(const list *l, const void *a, const void *b)
 {
 	if (l->compare != NULL)
 		return l->compare(a, b);
 	/* If compare function is not defined, value will be compared as int */
-	int *_a = (void *) a, *_b = (void *) b;
+	const int *_a = a, *_b = b;
 
 	if (_a < _b)
 		return -1;
@@ -78,10 +77,10 @@ static int list_compare(const list *l, const struct value *a,
 	return 0;
 }
 
-static struct value *list_remove_node(list *l, struct lnode *node, 
+static void *list_remove_node(list *l, struct lnode *node, 
 		struct lnode *previous)
 {
-	struct value *result = NULL;
+	void *result = NULL;
 
 	if (previous != NULL)
 		previous->next = node->next;
@@ -97,7 +96,7 @@ static struct value *list_remove_node(list *l, struct lnode *node,
  * parameter v. This do not mean that v is the same
  * in the linked list.  If parameter compare is null,
  * it will try to use the global compare method. */
-struct value *list_find(list *l, const struct value *v, f_list_cmp compare)
+void *list_find(list *l, const void *v, f_list_cmp compare)
 {
 	struct lnode *node = l->front;
 
@@ -115,7 +114,7 @@ struct value *list_find(list *l, const struct value *v, f_list_cmp compare)
 	return NULL;
 }
 
-struct value *list_get(list *l, register int index)
+void *list_get(list *l, register int index)
 {
 	struct lnode *node = l->front;
 
@@ -124,10 +123,10 @@ struct value *list_get(list *l, register int index)
 	return node != NULL?  node->value:  NULL;
 }
 
-struct value *list_remove(list *l, const struct value *value)
+void*list_remove(list *l, const void *value)
 {
 	struct lnode *prev = NULL, *node = l->front;
-	struct value *result = NULL;
+	void *result = NULL;
 
 	while (node != NULL) {
 		struct lnode *next = node->next;
@@ -143,14 +142,14 @@ struct value *list_remove(list *l, const struct value *value)
 	return result;
 }
 
-struct value *list_remove_front(list *l)
+void *list_remove_front(list *l)
 {
 	if (l->front == NULL)
 		return NULL;
 	return list_remove_node(l, l->front, NULL);
 }
 
-static struct lnode *list_new_node(struct value *v)
+static struct lnode *list_new_node(void *v)
 {
 	struct lnode *new_node;
 
@@ -164,8 +163,7 @@ static struct lnode *list_new_node(struct value *v)
 	return new_node;
 }
 	
-static struct lnode *list_insert_after_node(struct lnode *node, 
-		struct value *v)
+static struct lnode *list_insert_after_node(struct lnode *node, void *v)
 {
 	struct lnode *n = list_new_node(v);
 
@@ -176,7 +174,7 @@ static struct lnode *list_insert_after_node(struct lnode *node,
 	return n;
 }
 
-void list_insert_front(list *l, struct value *v)
+void list_insert_front(list *l, void *v)
 {
 	struct lnode *n = list_new_node(v);
 
@@ -185,7 +183,7 @@ void list_insert_front(list *l, struct value *v)
 	l->size++;
 }
 
-void list_insert_sorted(list *l, struct value *v)
+void list_insert_sorted(list *l, void *v)
 {
 	struct lnode *n = l->front;
 

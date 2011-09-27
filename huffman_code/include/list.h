@@ -4,20 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct value {
-	void *tree;
-	int count;
-};
-
 struct lnode {
-	struct value *value;
+	void *value;
 	struct lnode *next;
 };
 
 /* Function to compare two nodes. */
-typedef int (*f_list_cmp)(const struct value*, const struct value *);
+typedef int (*f_list_cmp)(const void *, const void *);
 
-typedef void (*f_list_free_value)(struct value *);
+typedef void (*f_list_free_value)(void *);
 
 
 typedef struct {
@@ -34,11 +29,12 @@ extern void list_set_compare_function(list *l, f_list_cmp compare);
 extern void list_set_free_value_method(list *l, f_list_free_value method);
 extern int list_size(const list *l);
 extern int list_isempty(const list *l);
-extern struct value *list_find(list *l, const struct value *v, f_list_cmp compare);
-extern struct value *list_get(list *l, register int index);
-extern struct value *list_remove(list *l, const struct value *value);
-extern struct value *list_remove_front(list *l);
-extern void list_insert_front(list *l, struct value *v);
-extern void list_insert_sorted(list *l, struct value *v);
+extern void *list_find(list *l, 
+		const void *v, f_list_cmp compare);
+extern void *list_get(list *l, register int index);
+extern void *list_remove(list *l, const void *value);
+extern void *list_remove_front(list *l);
+extern void list_insert_front(list *l, void *v);
+extern void list_insert_sorted(list *l, void *v);
 
 #endif
