@@ -330,7 +330,7 @@ static void tree_walk_stack(struct bstree *node)
 			char *content = stack_content(stack);
 			char key[2] = { (char) node->value, 0 };
 			//printf("%c: %s\n", (char) node->value, content);
-			dict_set(table, &key, content);
+			dict_set(table, (char *) &key, content);
 			free(content);
 		}
 		stack_push(stack, (int) '0');

@@ -20,7 +20,7 @@ int main(void)
 		bytes_left -= read;
 		offset += read - 1;
 	}
-	fprintf(stderr, "I read \"%s\"\n", buffer);
+	fprintf(stderr, "\nRead \"%s\"\n", buffer);
 
 	huffman_compress(hc, buffer); 
 	

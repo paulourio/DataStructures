@@ -217,11 +217,15 @@ static int huffman_export_bits(struct huffdata *code, char *data)
 
 void huffman_compress(void *pcode, const char *data)
 {
+	if (*data == NULL) {
+		fprintf(stderr, "Empty string.\n");
+		return;
+	}
 	/*fprintf(stderr, "Compressing \"%s\"\n", data); */
 	huffman_map(pcode, data);
 	huffman_compress_tree(pcode);
 	huffman_table(pcode);
-	/*huffman_print_final_tree(pcode); /* Bosque */
+	//huffman_print_final_tree(pcode); /* Bosque */
 	int new_size = huffman_export_bits(pcode, (char *) data);
 	int old_size = (int) strlen(data);
 	fprintf(stderr, "Compressed %.2f%%\n", 
