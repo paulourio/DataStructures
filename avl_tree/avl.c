@@ -214,6 +214,10 @@ static void tree_right_rotate(void **ptree, struct avltree *node)
 static void tree_rotate(void **ptree, struct avltree *node, 
 	struct avltree *previous, int is_double, int to_left)
 {
+	err("Rotating node %d [is_double=%d; to_left=%d", node->value, is_double, to_left);
+	if (is_double)
+		err(", previous_node=%d", previous->value);
+	err("]\n");
 	if (is_double) {
 		if (!to_left) {
 			tree_left_rotate(ptree, previous);

@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{bookmark}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{subfigure}
+
+
+\usepackage{hyperref}
+\hypersetup{
+	pdftitle    = {Exercícios de Estrutura de Dados II},
+	pdfsubject  = {Preparação para a primeira prova},
+	pdfauthor   = {Paulo Roberto Urio},
+	pdfcreator  = {Paulo Roberto Urio},
+	pdfproducer = {Paulo Roberto Urio},
+	pdfkeywords = {árvore} {exercícios} {prova}
+}
+
+\setcounter{secnumdepth}{0}
+\newcommand{\itembf}[1]{ \item{ \textbf{#1} }  \\ }
+
+\begin{document}
+
+
+\begin{center}
+Universidade Estadual do Centro Oeste do Paraná \\
+Departamento de Ciência da Computação \\
+Algoritmos e Estrutura de Dados II \\
+Professora Tony Alexander Hild \\
+Aluno/RA: Paulo Roberto Urio - 570091403
+\end{center}
+
+\section{Árvore AVL}
+
+\begin{enumerate}
+
+\itembf{O que é o fator de balanceamento de um nó?}
+	O fator de balanceamento de um nó é dado pelo seu peso em 
+	relação a sua sub-árvore.
+
+\itembf{Mostre com exemplos que cada nó de uma árvore AVL tem 
+	balanceamento -1, 0 ou 1.}
+	Em pré-ordem:
+	\begin{figure}[ht]
+		\subfigure[111] {
+			\includegraphics[scale=0.4]{arvores/ex1.svg}
+		}
+
+		\subfigure[222] {
+			\includegraphics[scale=0.4]{arvores/ex2.svg}
+		}
+
+		\subfigure[333] {
+			\includegraphics[scale=0.4]{arvores/ex3.svg}
+		}
+	\end{figure}
+
+
+\end{enumerate}
+
+\end{document}
+
