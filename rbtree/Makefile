@@ -1,6 +1,6 @@
 
-PROGRAMA=rbltree
-FONTES=rbtree.c test.c
+PROGRAMA=rbtree
+FONTES=redblack.c test.c
 INCLUDES=.
 
 BIBLIOTECAS=m

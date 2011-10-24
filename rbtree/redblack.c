@@ -16,6 +16,7 @@
 #	include <assert.h>
 #endif
 
+#define color(node)	(node != NULL?  node->color:  RB_BLACK)
 
 #define	max(a,b)	(a > b?	a: b)
 
@@ -34,7 +35,7 @@ static struct rbtree *rbtree_new_node(const int value)
 	bst->lchild = NULL;
 	bst->rchild = NULL;
 	bst->value = value;
-	bst->height = 0;
+	bst->color = RB_RED;
 	return bst;
 }
 
@@ -147,22 +148,7 @@ void rbtree_free(void **ptr)
 }
 
 
-static int rbtree_update_height(struct rbtree *node)
-{
-	if (node == NULL)
-		return 0;
-	if (node->lchild == NULL && node->rchild == NULL) {
-		node->height = 0;
-		return 0;
-	}
-	int left = rbtree_update_height(node->lchild);
-	int right = rbtree_update_height(node->rchild);
-	node->height = max(left, right) + 1;
-	return node->height;
-}
-
-
-static void rbtree_left_rotate(void **ptree, struct rbtree *node)
+static void rbtree_left_rotate(struct rbtree **ptree, struct rbtree *node)
 {
 	struct rbtree *y = node->rchild, *parent;
 	
@@ -179,11 +165,10 @@ static void rbtree_left_rotate(void **ptree, struct rbtree *node)
 		parent->rchild = y;
 	y->lchild = node;
 	node->parent = y;
-	rbtree_update_height(node->parent);
 }
 
 
-static void rbtree_right_rotate(void **ptree, struct rbtree *node)
+static void rbtree_right_rotate(struct rbtree **ptree, struct rbtree *node)
 {
 	struct rbtree *y = node->lchild, *parent;
 	
@@ -200,75 +185,65 @@ static void rbtree_right_rotate(void **ptree, struct rbtree *node)
 		parent->lchild = y;
 	y->rchild = node;
 	node->parent = y;
-	rbtree_update_height(node->parent);
 }
 
 
-/*
- * Rotate a node. If double_ is true, it will be done a double 
- * node rotation, otherwise a single node rotation. Left tell
- * which direction the rotation will be done. On double rotation,
- * which means their balance factor have opposite signs, the 
- * left will mean actually right rotation.
- */
-static void rbtree_rotate(void **ptree, struct rbtree *node, 
-	struct rbtree *previous, int is_double, int to_left)
+/* Fix the tree after insertion of node 'node'. */
+static void rbtree_insert_fixup(struct rbtree **tree, struct rbtree *node)
 {
-#ifdef	TESTING
-	err("Rotating node %d [is_double=%d; to_left=%d", 
-			node->value, is_double, to_left);
-	if (is_double)
-		err(", previous_node=%d", previous->value);
-	err("]\n");
-#endif
-	if (is_double) {
-		if (!to_left) {
-			rbtree_left_rotate(ptree, previous);
-			rbtree_right_rotate(ptree, node);
-		} else {
-			rbtree_right_rotate(ptree, previous);
-			rbtree_left_rotate(ptree, node);
+	struct rbtree *parent = node->parent;
+	struct rbtree *y, *grandparent;
+
+	while (color(parent) == RB_RED) {
+		grandparent = parent->parent;
+		if (parent == grandparent->lchild) {
+			y = grandparent->rchild;
+			if (color(y) == RB_RED) {
+				parent->color = RB_BLACK;
+				y->color = RB_BLACK;
+				grandparent->color = RB_RED;
+				node = grandparent;
+			} else {
+				if (node == parent->rchild) {
+					node = parent;
+					rbtree_left_rotate(tree, node);
+					parent = node->parent;
+					grandparent = parent->parent;
+				}
+				parent->color = RB_BLACK;
+				grandparent->color = RB_RED;
+				rbtree_right_rotate(tree, grandparent);
+			}
+		} else { /* parent == grandparent->rchild */
+			y = grandparent->lchild;
+			if (color(y) == RB_RED) {
+				parent->color = RB_BLACK;
+				y->color = RB_BLACK;
+				grandparent->color = RB_RED;
+				node = grandparent;
+			} else {
+				if (node == parent->lchild) {
+					node = parent;
+					rbtree_left_rotate(tree, node);
+					parent = node->parent;
+					grandparent = parent->parent;
+				}
+				parent->color = RB_BLACK;
+				grandparent->color = RB_RED;
+				rbtree_right_rotate(tree, grandparent);
+			}	
 		}
-	} else {
-		if (to_left)
-			rbtree_left_rotate(ptree, node);
-		else
-			rbtree_right_rotate(ptree, node);
+		parent = node->parent;
 	}
+	(*tree)->color = RB_BLACK;
 }
-
-
-#define	height(t)	(t != NULL?  t->height:  -1)
-static void rbtree_balance(void **ptree, struct rbtree *node)
-{
-	struct rbtree *old = NULL;
-	int bal, oldbal = 0;
-	
-	while (node != NULL) {
-		int rh = height(node->rchild);
-		int lh = height(node->lchild);
-		
-		bal = rh - lh;
-		node->height = max(rh, lh) + 1;
-		if (abs(bal) == 2) {
-			int is_double = (bal < 0 && oldbal > 0);
-			int to_left = (bal == 2);
-			
-			rbtree_rotate(ptree, node, old, is_double, to_left);
-			rbtree_balance(ptree, node);
-			break;
-		}	
-		oldbal = bal;
-		node = (old = node)->parent;
-	}
-}
-
 
 /* Insert a value in the rbtree */
 void rbtree_insert(void **ptree, const int value)
 {
 	struct rbtree	*prev = NULL, *bst = *ptree,
-			*node = rbtree_new_node(value);
+			*node = rbtree_new_node(value),
+			**tree = (struct rbtree **) ptree;
 
 	while (bst != NULL) {
 		prev = bst;
@@ -277,15 +252,12 @@ void rbtree_insert(void **ptree, const int value)
 	node->parent = prev;
 	if (prev == NULL) {
 		*ptree = node;		/* The rbtree is empty. */
-	} else {
-		node->height = prev->height + 1;
-		if (value < prev->value)
-			prev->lchild = node;
-		else
-			prev->rchild = node;
-	}
-	rbtree_balance(ptree, node);
-	rbtree_test(*ptree);
+	} else if (value < prev->value)
+		prev->lchild = node;
+	else
+		prev->rchild = node;
+	rbtree_insert_fixup(tree, node);
+	rbtree_test(*tree);
 }
 
 
@@ -357,7 +329,6 @@ void rbtree_delete(void **ptree, const int value)
 	rbtree_update_father_node(ptree, y, x);
 	if (y != node)
 		node->value = y->value;
-	rbtree_balance(ptree, y->parent);
 	free(y);
 	rbtree_test(*ptree);
 }
@@ -385,6 +356,28 @@ void rbtree_walk(void *ptree, register const fbst_print cblk,
 	}
 }
 
+/* Walk the rbtree in three orders, passing to the callback,
+ * the node color. */
+void rbtree_walk_ex(void *ptree, register const fbst_print_ex cblk,
+		register const enum RBTREE_WALKORDER worder)
+{
+	if (ptree != NULL) {
+		struct rbtree *node = ptree;
+
+		if (worder == WALK_PREORDER)
+			cblk(node->value, node->color);
+			
+		rbtree_walk_ex(node->lchild, cblk, worder);
+		
+		if (worder == WALK_INORDER)
+			cblk(node->value, node->color);
+			
+		rbtree_walk_ex(node->rchild, cblk, worder);
+		
+		if (worder == WALK_POSORDER)
+			cblk(node->value, node->color);
+	}
+}
 
 /* Returns the minimum value in the rbtree */
 int rbtree_min_value(void *ptree)

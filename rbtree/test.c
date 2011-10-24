@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include "rbtree.h"
 
-static void print_node(const int v)
+static void print_node(const int v, const uint8_t c)
 {
-	printf(" %d", v);
+	printf(" %d %d", v, c);
 }
 
 
@@ -35,8 +35,8 @@ int main(void)
 		debug("Inserting %d \n", valores[i]);
 		rbtree_insert(&arvore, valores[i]);
 
-		rbtree_walk(arvore, print_node, WALK_PREORDER);
-		printf(" . ");		
+		rbtree_walk_ex(arvore, print_node, WALK_PREORDER);
+		printf("  0 . ");		
 	}
 
 	/*for (i-- ; i >= 0; i--) {

@@ -9,6 +9,8 @@
 #ifndef RBTREE_H_INCLUDE
 #define RBTREE_H_INCLUDE
 
+#include <stdint.h>
+
 #define DEBUG
 
 #ifdef DEBUG
@@ -26,8 +28,11 @@ struct rbtree {
 	struct rbtree *lchild;
 	struct rbtree *rchild;
 	int value;
-	int height;
+	uint8_t color;
 };
+
+#define	RB_BLACK (0)
+#define RB_RED   (1)
 
 enum RBTREE_WALKORDER {
 	WALK_INORDER,
@@ -36,6 +41,7 @@ enum RBTREE_WALKORDER {
 };
 
 typedef void (*fbst_print)(const int);
+typedef void (*fbst_print_ex)(const int, const uint8_t);
 
 extern void *rbtree_new(void);
 extern void rbtree_free(void **ptr) __nonnull ((1));
@@ -43,9 +49,12 @@ extern void rbtree_insert(void **ptree, const int value) __nonnull ((1));
 extern void rbtree_delete(void **ptree, const int value) __nonnull ((1));
 extern void rbtree_walk(void *ptree, register const fbst_print cblk,
 		      register const enum RBTREE_WALKORDER worder);
+extern void rbtree_walk_ex(void *ptree, register const fbst_print_ex cblk,
+		      register const enum RBTREE_WALKORDER worder);
 extern int rbtree_min_value(void *ptree);
 extern int rbtree_max_value(void *ptree);
 extern int rbtree_successor_value(void *ptree, const int value);
 extern int rbtree_predecessor_value(void *ptree, const int value);
 
 #endif
+
