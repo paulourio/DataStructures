@@ -1,5 +1,5 @@
 
-PROGRAMA=avltree
+PROGRAMA=rbltree
 FONTES=avl.c test.c
 INCLUDES=.
 
@@ -12,9 +12,10 @@ CFLAGS=-Wall -g -O2 -Wshadow -Winit-self -Wredundant-decls -Wcast-align \
         -Wmissing-include-dirs -Wswitch-enum -Wswitch-default -Wmain -Wextra \
         -Wall -x c -std=gnu99 -pipe -Wformat=2 -Wnonnull -Wuninitialized \
         -Wtraditional-conversion -Wunsafe-loop-optimizations \
-        -Wpointer-arith -Wbad-function-cast -Wconversion -Wempty-body -Wlogical-op \
-        -Waggregate-return -Wstrict-prototypes -Wmissing-parameter-type \
-        -Wmissing-prototypes -Wmissing-field-initializers -Wmissing-format-attribute \
+        -Wpointer-arith -Wbad-function-cast -Wconversion -Wempty-body \
+	-Wlogical-op -Waggregate-return -Wstrict-prototypes \
+	-Wmissing-parameter-type -Wmissing-prototypes \
+	-Wmissing-field-initializers -Wmissing-format-attribute \
         -Wpacked -Wdisabled-optimization -Wmissing-braces \
         -Werror-implicit-function-declaration -ffinite-math-only -march=native \
         -DHAVE_INLINE 
@@ -22,7 +23,7 @@ CFLAGS=-Wall -g -O2 -Wshadow -Winit-self -Wredundant-decls -Wcast-align \
 default: $(PROGRAMA)
 
 $(PROGRAMA): $(FONTES:.c=.o)
-	$(CC) $(CFLAGS) -I$(INCLUDES) $(FONTES) -o$(PROGRAMA) -l$(BIBLIOTECAS)
+	$(CC) $(LDFLAGS) -I$(INCLUDES) $(FONTES:.c=.o) -o$(PROGRAMA) -l$(BIBLIOTECAS)
 
 clean:
 	$(RM) -f $(PROGRAMA) $(FONTES:.c=.o)
